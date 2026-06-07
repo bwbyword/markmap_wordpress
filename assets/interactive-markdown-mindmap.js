@@ -550,6 +550,11 @@
     });
 
     if (instance.g) {
+      if (layout === 'vertical') {
+        instance.g.interrupt();
+        instance.g.selectAll('*').interrupt();
+      }
+
       instance.g.selectAll('g.markmap-node')
         .attr('transform', (node) => `translate(${node.state.rect.x},${node.state.rect.y})`);
 
@@ -586,12 +591,34 @@
     return Promise.resolve(null);
   }
 
+  function scheduleRenderedLayout(container, plan, shouldFit) {
+    const instance = container.markmapInstance;
+    if (!instance || !plan) return;
+
+    const settleToken = (container.layoutSettleToken || 0) + 1;
+    const duration = instance.options && instance.options.duration ? instance.options.duration : 500;
+    const settleDelays = getLayout(container) === 'vertical'
+      ? [0, 80, 180, 320, duration + 80, duration * 2 + 160, duration * 3 + 240]
+      : [0, duration + 80, duration * 2 + 160, duration * 3 + 240];
+    container.layoutSettleToken = settleToken;
+
+    settleDelays.forEach((delay, index) => {
+      window.setTimeout(() => {
+        if (container.layoutSettleToken !== settleToken) return;
+        finishRenderedLayout(container, plan, index === settleDelays.length - 1 ? shouldFit : false).catch((error) => {
+          setStatus(container, error.message, true);
+        });
+      }, delay);
+    });
+  }
+
   function renderMarkdown(container, markdown, shouldFit) {
     const svg = container.querySelector('.interactive-markdown-mindmap__svg');
     const transformer = getTransformer();
     const plan = parseContentPlan(markdown || DEFAULT_MARKDOWN, container);
     const renderToken = (container.markmapRenderToken || 0) + 1;
     container.markmapRenderToken = renderToken;
+    container.currentMindmapPlan = plan;
     activatePlanning(container, plan.planning);
     activateBirdseye(container, plan.birdseye);
     activateLayout(container, getLayout(container));
@@ -609,18 +636,7 @@
     Promise.resolve(instance.setData(result.root)).then(() => {
       if (container.markmapRenderToken !== renderToken) return null;
 
-      finishRenderedLayout(container, plan, false);
-      const duration = instance.options && instance.options.duration ? instance.options.duration : 500;
-      const settleDelays = [duration + 80, duration * 2 + 160, duration * 3 + 240];
-
-      settleDelays.forEach((delay, index) => {
-        window.setTimeout(() => {
-          if (container.markmapRenderToken !== renderToken) return;
-          finishRenderedLayout(container, plan, index === settleDelays.length - 1 ? shouldFit : false).catch((error) => {
-            setStatus(container, error.message, true);
-          });
-        }, delay);
-      });
+      scheduleRenderedLayout(container, plan, shouldFit);
       return null;
     }).catch((error) => {
       setStatus(container, error.message, true);
@@ -721,11 +737,21 @@
         activateLayout(container, button.getAttribute('data-layout') || 'horizontal');
 
         if (container.markmapInstance) {
-          applyLayout(container);
-          window.setTimeout(() => container.markmapInstance.fit(), 40);
+          scheduleRenderedLayout(container, container.currentMindmapPlan, true);
         }
       });
     });
+
+    const svg = container.querySelector('.interactive-markdown-mindmap__svg');
+    if (svg) {
+      svg.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element) || !target.closest('g.markmap-node circle')) return;
+        if (getLayout(container) !== 'vertical') return;
+
+        scheduleRenderedLayout(container, container.currentMindmapPlan, true);
+      }, true);
+    }
 
     if (textarea) {
       textarea.addEventListener('input', () => {
