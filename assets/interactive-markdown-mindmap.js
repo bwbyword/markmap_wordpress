@@ -421,69 +421,107 @@
     return nodes;
   }
 
-  function getVerticalLevelTops(root) {
-    const levelHeights = [];
+  function groupChildLayouts(childLayouts, maxRowWidth, childGap) {
+    const rows = [];
 
-    collectVisibleNodes(root, 0, []).forEach(({ node, depth }) => {
-      const rect = node.state && node.state.horizontalRect;
-      if (!rect) return;
+    childLayouts.forEach((layout, index) => {
+      const lastRow = rows[rows.length - 1];
+      const nextWidth = lastRow
+        ? lastRow.width + childGap + layout.width
+        : layout.width;
 
-      levelHeights[depth] = Math.max(levelHeights[depth] || 0, rect.height);
-    });
-
-    return levelHeights.reduce((tops, height, index) => {
-      if (index === 0) {
-        tops[index] = 0;
-      } else {
-        tops[index] = tops[index - 1] + (levelHeights[index - 1] || 0) + 112;
+      if (!lastRow || (lastRow.layouts.length && nextWidth > maxRowWidth)) {
+        rows.push({
+          height: layout.height,
+          indexes: [index],
+          layouts: [layout],
+          width: layout.width,
+        });
+        return;
       }
 
-      return tops;
-    }, []);
+      lastRow.height = Math.max(lastRow.height, layout.height);
+      lastRow.indexes.push(index);
+      lastRow.layouts.push(layout);
+      lastRow.width = nextWidth;
+    });
+
+    return rows;
   }
 
-  function measureVerticalSubtree(node) {
+  function measureVerticalSubtree(node, options, depth) {
     const rect = node.state.horizontalRect;
     const children = getVisibleChildren(node);
-    const childLayouts = children.map((child) => measureVerticalSubtree(child));
-    const childGap = 56;
+    const childLayouts = children.map((child) => measureVerticalSubtree(child, options, depth + 1));
+    const childGap = depth === 0 ? 72 : 56;
+    const levelGap = depth === 0 ? 128 : 112;
+    const rowGap = 104;
     const childrenWidth = childLayouts.reduce((total, layout) => total + layout.width, 0)
       + Math.max(0, childLayouts.length - 1) * childGap;
-    const width = Math.max(rect.width, childrenWidth);
+    const shouldWrap = depth === 0 && childLayouts.length > 3 && childrenWidth > options.maxRowWidth;
+    const rows = shouldWrap ? groupChildLayouts(childLayouts, options.maxRowWidth, childGap) : [];
+    const rowWidth = rows.length ? Math.max(...rows.map((row) => row.width)) : childrenWidth;
+    const childrenHeight = rows.length
+      ? rows.reduce((total, row) => total + row.height, 0) + Math.max(0, rows.length - 1) * rowGap
+      : Math.max(0, ...childLayouts.map((layout) => layout.height));
+    const width = Math.max(rect.width, rowWidth);
+    const height = rect.height + (children.length ? levelGap + childrenHeight : 0);
 
     node.state.verticalLayout = {
       childGap,
       childLayouts,
+      height,
+      levelGap,
+      rowGap,
+      rows,
       width,
     };
 
     return node.state.verticalLayout;
   }
 
-  function positionVerticalSubtree(node, left, depth, levelTops) {
+  function positionVerticalSubtree(node, left, top) {
     const layout = node.state.verticalLayout;
     const rect = node.state.horizontalRect;
     const children = getVisibleChildren(node);
-    const childrenWidth = layout.childLayouts.reduce((total, childLayout) => total + childLayout.width, 0)
-      + Math.max(0, layout.childLayouts.length - 1) * layout.childGap;
 
     node.state.rect = {
       x: left + layout.width / 2 - rect.width / 2,
-      y: levelTops[depth] || 0,
+      y: top,
       width: rect.width,
       height: rect.height,
     };
 
+    if (layout.rows && layout.rows.length) {
+      let rowTop = top + rect.height + layout.levelGap;
+
+      layout.rows.forEach((row) => {
+        let rowLeft = left + (layout.width - row.width) / 2;
+
+        row.layouts.forEach((childLayout, rowIndex) => {
+          positionVerticalSubtree(children[row.indexes[rowIndex]], rowLeft, rowTop);
+          rowLeft += childLayout.width + layout.childGap;
+        });
+
+        rowTop += row.height + layout.rowGap;
+      });
+
+      return;
+    }
+
+    const childrenWidth = layout.childLayouts.reduce((total, childLayout) => total + childLayout.width, 0)
+      + Math.max(0, layout.childLayouts.length - 1) * layout.childGap;
     let childLeft = left + (layout.width - childrenWidth) / 2;
+    const childTop = top + rect.height + layout.levelGap;
 
     children.forEach((child, index) => {
       const childLayout = layout.childLayouts[index];
-      positionVerticalSubtree(child, childLeft, depth + 1, levelTops);
+      positionVerticalSubtree(child, childLeft, childTop);
       childLeft += childLayout.width + layout.childGap;
     });
   }
 
-  function projectLayoutRects(instance, layout) {
+  function projectLayoutRects(instance, layout, container) {
     cacheHorizontalRects(instance);
 
     const nodes = collectNodes(instance.state && instance.state.data, []);
@@ -501,8 +539,12 @@
     });
 
     if (layout === 'vertical' && instance.state.data && instance.state.data.state) {
-      measureVerticalSubtree(instance.state.data);
-      positionVerticalSubtree(instance.state.data, 0, 0, getVerticalLevelTops(instance.state.data));
+      const svg = container && container.querySelector('.interactive-markdown-mindmap__svg');
+      const viewportWidth = svg && svg.clientWidth ? svg.clientWidth : 1200;
+      const maxRowWidth = Math.max(1800, Math.min(3200, viewportWidth * 1.8));
+
+      measureVerticalSubtree(instance.state.data, { maxRowWidth }, 0);
+      positionVerticalSubtree(instance.state.data, 0, 0);
     }
 
     updateStateBounds(instance);
@@ -543,7 +585,7 @@
       return;
     }
 
-    projectLayoutRects(instance, layout);
+    projectLayoutRects(instance, layout, container);
     const nodesByPath = new Map();
     const linksByPath = new Map();
 
