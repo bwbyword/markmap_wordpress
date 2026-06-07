@@ -375,27 +375,103 @@
     };
   }
 
+  function getVisibleChildren(node) {
+    if (node.payload && node.payload.fold) return [];
+
+    return node.children || [];
+  }
+
+  function collectVisibleNodes(node, depth, nodes) {
+    if (!node) return nodes;
+
+    nodes.push({ node, depth });
+    getVisibleChildren(node).forEach((child) => collectVisibleNodes(child, depth + 1, nodes));
+    return nodes;
+  }
+
+  function getVerticalLevelTops(root) {
+    const levelHeights = [];
+
+    collectVisibleNodes(root, 0, []).forEach(({ node, depth }) => {
+      const rect = node.state && node.state.horizontalRect;
+      if (!rect) return;
+
+      levelHeights[depth] = Math.max(levelHeights[depth] || 0, rect.height);
+    });
+
+    return levelHeights.reduce((tops, height, index) => {
+      if (index === 0) {
+        tops[index] = 0;
+      } else {
+        tops[index] = tops[index - 1] + (levelHeights[index - 1] || 0) + 112;
+      }
+
+      return tops;
+    }, []);
+  }
+
+  function measureVerticalSubtree(node) {
+    const rect = node.state.horizontalRect;
+    const children = getVisibleChildren(node);
+    const childLayouts = children.map((child) => measureVerticalSubtree(child));
+    const childGap = 56;
+    const childrenWidth = childLayouts.reduce((total, layout) => total + layout.width, 0)
+      + Math.max(0, childLayouts.length - 1) * childGap;
+    const width = Math.max(rect.width, childrenWidth);
+
+    node.state.verticalLayout = {
+      childGap,
+      childLayouts,
+      width,
+    };
+
+    return node.state.verticalLayout;
+  }
+
+  function positionVerticalSubtree(node, left, depth, levelTops) {
+    const layout = node.state.verticalLayout;
+    const rect = node.state.horizontalRect;
+    const children = getVisibleChildren(node);
+    const childrenWidth = layout.childLayouts.reduce((total, childLayout) => total + childLayout.width, 0)
+      + Math.max(0, layout.childLayouts.length - 1) * layout.childGap;
+
+    node.state.rect = {
+      x: left + layout.width / 2 - rect.width / 2,
+      y: levelTops[depth] || 0,
+      width: rect.width,
+      height: rect.height,
+    };
+
+    let childLeft = left + (layout.width - childrenWidth) / 2;
+
+    children.forEach((child, index) => {
+      const childLayout = layout.childLayouts[index];
+      positionVerticalSubtree(child, childLeft, depth + 1, levelTops);
+      childLeft += childLayout.width + layout.childGap;
+    });
+  }
+
   function projectLayoutRects(instance, layout) {
     cacheHorizontalRects(instance);
 
-    collectNodes(instance.state && instance.state.data, []).forEach((node) => {
+    const nodes = collectNodes(instance.state && instance.state.data, []);
+    nodes.forEach((node) => {
       if (!node.state || !node.state.horizontalRect) return;
 
       const rect = node.state.horizontalRect;
-      node.state.rect = layout === 'vertical'
-        ? {
-          x: rect.y,
-          y: rect.x,
-          width: rect.width,
-          height: rect.height,
-        }
-        : {
-          x: rect.x,
-          y: rect.y,
-          width: rect.width,
-          height: rect.height,
-        };
+
+      node.state.rect = {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+      };
     });
+
+    if (layout === 'vertical' && instance.state.data && instance.state.data.state) {
+      measureVerticalSubtree(instance.state.data);
+      positionVerticalSubtree(instance.state.data, 0, 0, getVerticalLevelTops(instance.state.data));
+    }
 
     updateStateBounds(instance);
   }
@@ -425,22 +501,65 @@
 
   function applyLayout(container) {
     const instance = container.markmapInstance;
-    if (!instance || !instance.state || !instance.state.data || !instance.g) return;
+    if (!instance || !instance.state || !instance.state.data) return;
 
     const layout = getLayout(container);
     projectLayoutRects(instance, layout);
+    const nodesByPath = new Map();
+    const linksByPath = new Map();
 
-    instance.g.selectAll('g.markmap-node')
-      .attr('transform', (node) => `translate(${node.state.rect.x},${node.state.rect.y})`);
+    collectNodes(instance.state.data, []).forEach((node) => {
+      if (!node.state || !node.state.path) return;
 
-    instance.g.selectAll('path.markmap-link')
-      .attr('d', (link) => getLinkPath(link, layout));
+      nodesByPath.set(node.state.path, node);
+      getVisibleChildren(node).forEach((child) => {
+        linksByPath.set(child.state.path, { source: node, target: child });
+      });
+    });
+
+    if (instance.g) {
+      instance.g.selectAll('g.markmap-node')
+        .attr('transform', (node) => `translate(${node.state.rect.x},${node.state.rect.y})`);
+
+      instance.g.selectAll('path.markmap-link')
+        .attr('d', (link) => getLinkPath(link, layout));
+    }
+
+    container.querySelectorAll('g.markmap-node').forEach((element) => {
+      const node = element.__data__ || nodesByPath.get(element.getAttribute('data-path'));
+      if (!node || !node.state || !node.state.rect) return;
+
+      element.setAttribute('transform', `translate(${node.state.rect.x},${node.state.rect.y})`);
+    });
+
+    container.querySelectorAll('path.markmap-link').forEach((element) => {
+      const link = element.__data__ || linksByPath.get(element.getAttribute('data-path'));
+      if (!link || !link.source || !link.target) return;
+
+      element.setAttribute('d', getLinkPath(link, layout));
+    });
+  }
+
+  function finishRenderedLayout(container, plan, shouldFit) {
+    const instance = container.markmapInstance;
+    if (!instance) return Promise.resolve(null);
+
+    applyLayout(container);
+    decorateMindmap(container, plan);
+
+    if (shouldFit !== false) {
+      return instance.fit();
+    }
+
+    return Promise.resolve(null);
   }
 
   function renderMarkdown(container, markdown, shouldFit) {
     const svg = container.querySelector('.interactive-markdown-mindmap__svg');
     const transformer = getTransformer();
     const plan = parseContentPlan(markdown || DEFAULT_MARKDOWN, container);
+    const renderToken = (container.markmapRenderToken || 0) + 1;
+    container.markmapRenderToken = renderToken;
     activatePlanning(container, plan.planning);
     activateBirdseye(container, plan.birdseye);
     activateLayout(container, getLayout(container));
@@ -456,13 +575,20 @@
     }
 
     Promise.resolve(instance.setData(result.root)).then(() => {
-      applyLayout(container);
-      decorateMindmap(container, plan);
+      if (container.markmapRenderToken !== renderToken) return null;
 
-      if (shouldFit !== false) {
-        return instance.fit();
-      }
+      finishRenderedLayout(container, plan, false);
+      const duration = instance.options && instance.options.duration ? instance.options.duration : 500;
+      const settleDelays = [duration + 80, duration * 2 + 160, duration * 3 + 240];
 
+      settleDelays.forEach((delay, index) => {
+        window.setTimeout(() => {
+          if (container.markmapRenderToken !== renderToken) return;
+          finishRenderedLayout(container, plan, index === settleDelays.length - 1 ? shouldFit : false).catch((error) => {
+            setStatus(container, error.message, true);
+          });
+        }, delay);
+      });
       return null;
     }).catch((error) => {
       setStatus(container, error.message, true);

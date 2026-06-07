@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.5
+Stable tag: 0.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,6 +134,10 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.6 =
+
+* Improved vertical layout spacing to prevent overlapping branches and content-brick cards.
 
 = 0.1.5 =
 
