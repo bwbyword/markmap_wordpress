@@ -1,17 +1,40 @@
-name: CI
+name: Plugin Checks
 
 on:
-  - pull_request
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
 
 jobs:
-  block:
+  sanity:
+    name: Plugin sanity checks
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - run: corepack enable
-      - uses: actions/setup-node@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: 22
-          cache: "pnpm"
-      - run: pnpm install
-      - run: pnpm build
+          php-version: '7.4'
+          coverage: none
+
+      - name: Lint PHP
+        run: php -l markmap-wordpress.php
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/markmap-wordpress.js
+          node --check assets/vendor/d3.min.js
+          node --check assets/vendor/markmap-lib.iife.js
+          node --check assets/vendor/markmap-view.js
+
+      - name: Check bundled executable assets
+        run: |
+          if grep -R -n -E 'cdn\.jsdelivr|unpkg\.com|esm\.sh|https://cdn|http://cdn' markmap-wordpress.php assets; then
+            echo "Unexpected public CDN reference found in executable plugin files."
+            exit 1
+          fi

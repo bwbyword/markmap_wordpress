@@ -1,0 +1,31 @@
+# Third-Party Notices
+
+Markmap WordPress is licensed under GPL-2.0-or-later.
+
+This plugin includes local browser builds from the following third-party projects. Their license texts are preserved in the `licenses/` directory.
+
+## Markmap
+
+- Packages: `markmap-view`, `markmap-lib`
+- Version: `0.18.12`
+- Project: https://github.com/markmap/markmap
+- License: MIT
+- License files:
+  - `licenses/markmap-view-LICENSE.txt`
+  - `licenses/markmap-lib-LICENSE.txt`
+
+The vendored `markmap-lib` browser build has been patched to use a local-only URL provider so the WordPress plugin does not load executable code from public CDNs.
+
+The vendored `markmap-view` browser build has been patched so its exported generic asset loaders reject remote script and stylesheet URLs.
+
+## D3
+
+- Package: `d3`
+- Version: `7.9.0`
+- Project: https://d3js.org
+- License: ISC
+- License file: `licenses/d3-LICENSE.txt`
+
+## WordPress.org Packaging Notes
+
+The plugin wrapper is GPL-2.0-or-later for WordPress compatibility. Bundled MIT and ISC dependencies are GPL-compatible and retain their original notices.

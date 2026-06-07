@@ -1,9 +1,7 @@
-node_modules
+.DS_Store
 *.log
+node_modules
+/dist
+/build
+/*.zip
 /.idea
-/api
-packages/*/dist
-.nyc_output/
-packages/*/coverage
-packages/*/types
-*.tsbuildinfo

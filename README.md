@@ -1,22 +1,22 @@
 # Markmap WordPress
 
-This repository is a WordPress-focused fork of [markmap/markmap](https://github.com/markmap/markmap).
+Markmap WordPress is a standalone WordPress plugin that renders Markdown as interactive Markmap mindmaps, or generates a visual sitemap from published WordPress content.
 
-The upstream Markmap project turns Markdown into interactive mindmaps. This fork keeps that foundation and adds an installable WordPress plugin so Markmap can be used directly inside WordPress pages.
+This project uses the upstream [Markmap](https://github.com/markmap/markmap) browser libraries, but the repository itself is intentionally shaped as a WordPress plugin rather than a fork of the full Markmap monorepo.
 
-## What This Fork Adds
+## Features
 
-- A WordPress plugin in [`markmap-wordpress`](./markmap-wordpress).
-- A `[markmap_wordpress]` shortcode for embedding mindmaps in pages and posts.
-- Markdown mode for pasting Markdown or uploading a `.md` file.
+- `[markmap_wordpress]` shortcode for pages, posts, and Elementor Shortcode widgets.
+- Markdown mode with an editor and `.md` file upload.
 - Read-only Markdown embeds using enclosing shortcode content.
 - Sitemap mode for generating a visual mindmap from published WordPress content.
-- Subtle fit and fullscreen controls for clean page embeds.
-- A WordPress REST endpoint that converts public post types into sitemap Markdown.
+- Subtle zoom, fit, and fullscreen controls for clean page embeds.
+- Elementor editor preview support after the Shortcode widget preview refreshes.
+- Bundled local browser assets for `d3`, `markmap-view`, and `markmap-lib`.
 
-## Install The Plugin
+## Install
 
-Copy the plugin directory into WordPress:
+Copy this repository folder into WordPress:
 
 ```text
 wp-content/plugins/markmap-wordpress
@@ -24,11 +24,7 @@ wp-content/plugins/markmap-wordpress
 
 Then activate **Markmap WordPress** in WordPress Admin > Plugins.
 
-The plugin files live here:
-
-```text
-markmap-wordpress/
-```
+After activation, open **Settings > Markmap WordPress** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
 
 ## Basic Usage
 
@@ -58,7 +54,7 @@ Place Markdown between the opening and closing shortcode tags:
 [/markmap_wordpress]
 ```
 
-When Markdown is supplied this way, the plugin renders only the visual mindmap canvas with subtle fit and fullscreen controls at the bottom.
+When Markdown is supplied this way, the plugin renders only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls at the bottom.
 
 ## Visual Sitemap
 
@@ -84,9 +80,20 @@ The `types` option accepts comma-separated public post types, such as:
 
 ## Repository Structure
 
-- `markmap-wordpress/`: the WordPress plugin added by this fork.
-- `packages/`: upstream Markmap packages.
-- `README.md`: this WordPress-focused overview.
+- `markmap-wordpress.php`: main WordPress plugin file.
+- `assets/`: plugin CSS, JavaScript, and bundled browser builds.
+- `licenses/`: third-party license texts.
+- `readme.txt`: WordPress.org plugin readme.
+- `THIRD-PARTY-NOTICES.md`: bundled dependency notices and patch notes.
+- `LICENSE.txt`: GPLv2 license text for the WordPress plugin wrapper.
+
+## WordPress.org Notes
+
+The WordPress plugin wrapper is licensed as GPLv2 or later for WordPress.org compatibility.
+
+The plugin does not inject a public powered-by link. It also avoids loading executable browser code from public CDNs by bundling the required browser assets locally.
+
+Bundled third-party assets retain their original GPL-compatible notices in [`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md) and [`licenses/`](./licenses/).
 
 ## Upstream Credit
 
@@ -99,4 +106,6 @@ For general Markmap documentation, visit:
 
 ## License
 
-This fork follows the upstream Markmap license. See [LICENSE](./LICENSE).
+Markmap WordPress is licensed as GPLv2 or later.
+
+Bundled Markmap packages are MIT licensed, and D3 is ISC licensed. See [`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md) for details.
