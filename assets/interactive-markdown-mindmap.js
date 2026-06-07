@@ -573,6 +573,41 @@
     return `M${sourceX},${sourceY}C${middleX},${sourceY} ${middleX},${targetY} ${targetX},${targetY}`;
   }
 
+  function restoreVerticalSvgVisibility(container) {
+    if (getLayout(container) !== 'vertical') return;
+
+    container.querySelectorAll('g.markmap-node').forEach((element) => {
+      const node = element.__data__;
+
+      element.querySelectorAll('line').forEach((line) => {
+        line.setAttribute('stroke-width', '1.4');
+        line.setAttribute('vector-effect', 'non-scaling-stroke');
+        line.style.opacity = '1';
+        line.style.strokeWidth = '1.4px';
+      });
+
+      element.querySelectorAll('circle').forEach((circle) => {
+        if (node && (node.children || []).length) {
+          circle.setAttribute('r', '5.5');
+        }
+
+        circle.setAttribute('stroke-width', '1.6');
+        circle.setAttribute('vector-effect', 'non-scaling-stroke');
+        circle.style.opacity = '1';
+        circle.style.strokeWidth = '1.6px';
+      });
+    });
+
+    container.querySelectorAll('path.markmap-link').forEach((element) => {
+      if (element.style.display === 'none') return;
+
+      element.setAttribute('stroke-width', '1.4');
+      element.setAttribute('vector-effect', 'non-scaling-stroke');
+      element.style.opacity = '1';
+      element.style.strokeWidth = '1.4px';
+    });
+  }
+
   function applyLayout(container) {
     const instance = container.markmapInstance;
     if (!instance || !instance.state || !instance.state.data) return;
@@ -637,6 +672,11 @@
         line.setAttribute('y1', String(node.state.rect.height));
         line.setAttribute('y2', String(node.state.rect.height));
       });
+      element.querySelectorAll('circle').forEach((circle) => {
+        if ((node.children || []).length) {
+          circle.setAttribute('r', '5.5');
+        }
+      });
       element.setAttribute('transform', `translate(${node.state.rect.x},${node.state.rect.y})`);
     });
 
@@ -654,6 +694,8 @@
       element.style.opacity = '1';
       element.setAttribute('d', getLinkPath(link, layout));
     });
+
+    restoreVerticalSvgVisibility(container);
   }
 
   function finishRenderedLayout(container, plan, shouldFit) {
@@ -664,9 +706,13 @@
     decorateMindmap(container, plan);
 
     if (shouldFit !== false) {
-      return instance.fit();
+      return Promise.resolve(instance.fit()).then(() => {
+        restoreVerticalSvgVisibility(container);
+        return null;
+      });
     }
 
+    restoreVerticalSvgVisibility(container);
     return Promise.resolve(null);
   }
 
