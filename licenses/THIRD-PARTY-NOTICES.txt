@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Markmap Mindmap is licensed under GPL-2.0-or-later.
+Interactive Markdown Mindmap is licensed under GPL-2.0-or-later.
 
 This plugin includes local browser builds from the following third-party projects. Their license texts are preserved in the `licenses/` directory.
 

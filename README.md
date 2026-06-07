@@ -1,12 +1,12 @@
-# Markmap Mindmap
+# Interactive Markdown Mindmap
 
-Markmap Mindmap is a standalone WordPress plugin that renders Markdown as interactive Markmap mindmaps, or generates a visual sitemap from published WordPress content.
+Interactive Markdown Mindmap is a standalone WordPress plugin that renders Markdown as interactive Markmap mindmaps, or generates a visual sitemap from published WordPress content.
 
 This project uses the upstream [Markmap](https://github.com/markmap/markmap) browser libraries, but the repository itself is intentionally shaped as a WordPress plugin rather than a fork of the full Markmap monorepo.
 
 ## Features
 
-- `[markmap_mindmap]` shortcode for pages, posts, and Elementor Shortcode widgets.
+- `[interactive_markdown_mindmap]` shortcode for pages, posts, and Elementor Shortcode widgets.
 - Markdown mode with an editor and `.md` file upload.
 - Read-only Markdown embeds using enclosing shortcode content.
 - Sitemap mode for generating a visual mindmap from published WordPress content.
@@ -19,27 +19,27 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 Copy this repository folder into WordPress:
 
 ```text
-wp-content/plugins/markmap-mindmap
+wp-content/plugins/interactive-markdown-mindmap
 ```
 
-Then activate **Markmap Mindmap** in WordPress Admin > Plugins.
+Then activate **Interactive Markdown Mindmap** in WordPress Admin > Plugins.
 
 The main plugin file must be directly inside the plugin folder:
 
 ```text
-wp-content/plugins/markmap-mindmap/markmap-mindmap.php
+wp-content/plugins/interactive-markdown-mindmap/interactive-markdown-mindmap.php
 ```
 
 If the files are nested one level deeper, WordPress will not show the plugin in the Plugins list.
 
-After activation, open **Settings > Markmap Mindmap** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
+After activation, open **Settings > Interactive Markdown Mindmap** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
 
 ## Basic Usage
 
 Add the shortcode to any WordPress page or post:
 
 ```text
-[markmap_mindmap]
+[interactive_markdown_mindmap]
 ```
 
 This displays the interactive Markdown editor, file upload control, and mindmap canvas.
@@ -49,7 +49,7 @@ This displays the interactive Markdown editor, file upload control, and mindmap 
 Place Markdown between the opening and closing shortcode tags:
 
 ```text
-[markmap_mindmap mode="markdown" height="70vh"]
+[interactive_markdown_mindmap mode="markdown" height="70vh"]
 # Product Plan
 
 ## Discovery
@@ -59,7 +59,7 @@ Place Markdown between the opening and closing shortcode tags:
 ## Build
 - Prototype
 - Launch
-[/markmap_mindmap]
+[/interactive_markdown_mindmap]
 ```
 
 When Markdown is supplied this way, the plugin renders only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls at the bottom.
@@ -69,13 +69,13 @@ When Markdown is supplied this way, the plugin renders only the visual mindmap c
 Generate a mindmap from published WordPress content:
 
 ```text
-[markmap_mindmap mode="sitemap" height="70vh" types="page,post"]
+[interactive_markdown_mindmap mode="sitemap" height="70vh" types="page,post"]
 ```
 
 The `types` option accepts comma-separated public post types, such as:
 
 ```text
-[markmap_mindmap mode="sitemap" types="page,post,product"]
+[interactive_markdown_mindmap mode="sitemap" types="page,post,product"]
 ```
 
 ## Shortcode Options
@@ -88,7 +88,7 @@ The `types` option accepts comma-separated public post types, such as:
 
 ## Repository Structure
 
-- `markmap-mindmap.php`: main WordPress plugin file.
+- `interactive-markdown-mindmap.php`: main WordPress plugin file.
 - `assets/`: plugin CSS, JavaScript, and bundled browser builds.
 - `licenses/`: third-party license texts.
 - `readme.txt`: WordPress.org plugin readme.
@@ -114,6 +114,6 @@ For general Markmap documentation, visit:
 
 ## License
 
-Markmap Mindmap is licensed as GPLv2 or later.
+Interactive Markdown Mindmap is licensed as GPLv2 or later.
 
 Bundled Markmap packages are MIT licensed, and D3 is ISC licensed. See [`licenses/THIRD-PARTY-NOTICES.txt`](./licenses/THIRD-PARTY-NOTICES.txt) for details.

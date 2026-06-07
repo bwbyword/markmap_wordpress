@@ -1,4 +1,4 @@
-=== Markmap Mindmap ===
+=== Interactive Markdown Mindmap ===
 Contributors: bwbyword
 Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
@@ -12,7 +12,7 @@ Render Markdown as interactive Markmap mindmaps in WordPress, or generate visual
 
 == Description ==
 
-Markmap Mindmap is a WordPress-focused plugin built on top of the upstream Markmap project. It lets you embed interactive Markdown mindmaps in pages, posts, and Elementor Shortcode widgets.
+Interactive Markdown Mindmap is a WordPress-focused plugin built on top of the upstream Markmap project. It lets you embed interactive Markdown mindmaps in pages, posts, and Elementor Shortcode widgets.
 
 The plugin supports:
 
@@ -26,10 +26,10 @@ The visual renderer uses local bundled browser assets for `d3`, `markmap-view`, 
 
 == Installation ==
 
-1. Upload the `markmap-mindmap` folder to `/wp-content/plugins/`.
-2. Activate **Markmap Mindmap** through the WordPress Plugins screen.
-3. Open **Settings > Markmap Mindmap** for usage examples.
-4. Add `[markmap_mindmap]` to any page or post.
+1. Upload the `interactive-markdown-mindmap` folder to `/wp-content/plugins/`.
+2. Activate **Interactive Markdown Mindmap** through the WordPress Plugins screen.
+3. Open **Settings > Interactive Markdown Mindmap** for usage examples.
+4. Add `[interactive_markdown_mindmap]` to any page or post.
 
 == Usage ==
 
@@ -37,14 +37,14 @@ The visual renderer uses local bundled browser assets for `d3`, `markmap-view`, 
 
 Add this shortcode to show the interactive Markdown editor, upload control, and mindmap canvas:
 
-`[markmap_mindmap]`
+`[interactive_markdown_mindmap]`
 
 = Read-only Markdown embed =
 
 Place Markdown between the opening and closing shortcode tags:
 
 `
-[markmap_mindmap mode="markdown" height="70vh"]
+[interactive_markdown_mindmap mode="markdown" height="70vh"]
 # Product Plan
 
 ## Discovery
@@ -54,7 +54,7 @@ Place Markdown between the opening and closing shortcode tags:
 ## Build
 - Prototype
 - Launch
-[/markmap_mindmap]
+[/interactive_markdown_mindmap]
 `
 
 When Markdown is supplied this way, the plugin renders only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls.
@@ -63,11 +63,11 @@ When Markdown is supplied this way, the plugin renders only the visual mindmap c
 
 Generate a mindmap from published WordPress pages and posts:
 
-`[markmap_mindmap mode="sitemap" height="70vh" types="page,post"]`
+`[interactive_markdown_mindmap mode="sitemap" height="70vh" types="page,post"]`
 
 Include additional public post types by changing `types`:
 
-`[markmap_mindmap mode="sitemap" types="page,post,product"]`
+`[interactive_markdown_mindmap mode="sitemap" types="page,post,product"]`
 
 == Shortcode Options ==
 
@@ -79,7 +79,7 @@ Include additional public post types by changing `types`:
 
 == Elementor ==
 
-Use Elementor's Shortcode widget and paste any Markmap Mindmap shortcode.
+Use Elementor's Shortcode widget and paste any Interactive Markdown Mindmap shortcode.
 
 Elementor usually refreshes shortcode previews after you click **Apply**. After the preview updates, the mindmap should render inside the editor.
 
@@ -87,7 +87,7 @@ Elementor usually refreshes shortcode previews after you click **Apply**. After 
 
 = Where are the usage instructions after installation? =
 
-Open **Settings > Markmap Mindmap** in WordPress Admin.
+Open **Settings > Interactive Markdown Mindmap** in WordPress Admin.
 
 = Why does Elementor not update while I type? =
 
