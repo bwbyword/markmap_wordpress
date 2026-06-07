@@ -575,6 +575,10 @@
       if (!node || !node.state || !node.state.rect) return;
 
       element.style.display = '';
+      element.style.opacity = '1';
+      element.querySelectorAll('foreignObject, text, line, circle').forEach((child) => {
+        child.style.opacity = '1';
+      });
       element.setAttribute('transform', `translate(${node.state.rect.x},${node.state.rect.y})`);
     });
 
@@ -589,6 +593,7 @@
       if (!link || !link.source || !link.target) return;
 
       element.style.display = '';
+      element.style.opacity = '1';
       element.setAttribute('d', getLinkPath(link, layout));
     });
   }
