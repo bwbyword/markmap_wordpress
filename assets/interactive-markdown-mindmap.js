@@ -567,26 +567,28 @@
     container.querySelectorAll('g.markmap-node').forEach((element) => {
       const path = element.getAttribute('data-path');
       if (layout === 'vertical' && path && !nodesByPath.has(path)) {
-        element.remove();
+        element.style.display = 'none';
         return;
       }
 
       const node = element.__data__ || nodesByPath.get(path);
       if (!node || !node.state || !node.state.rect) return;
 
+      element.style.display = '';
       element.setAttribute('transform', `translate(${node.state.rect.x},${node.state.rect.y})`);
     });
 
     container.querySelectorAll('path.markmap-link').forEach((element) => {
       const path = element.getAttribute('data-path');
       if (layout === 'vertical' && path && !linksByPath.has(path)) {
-        element.remove();
+        element.style.display = 'none';
         return;
       }
 
       const link = element.__data__ || linksByPath.get(path);
       if (!link || !link.source || !link.target) return;
 
+      element.style.display = '';
       element.setAttribute('d', getLinkPath(link, layout));
     });
   }
