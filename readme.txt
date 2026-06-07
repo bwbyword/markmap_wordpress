@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.4
+Stable tag: 0.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ The plugin supports:
 * Mainpage First and Structure First planning modes.
 * Bird's Eye View for showing all content brick lists at once.
 * Brick count badges on collapsed page nodes.
+* Horizontal and vertical mindmap layout toggle.
 * Subtle zoom, fit, and fullscreen controls for clean page embeds.
 * Drag-and-drop Elementor widget with a Markdown editing box in the Elementor Content panel.
 * Elementor editor preview support after widget or shortcode preview updates.
@@ -100,6 +101,7 @@ Include additional public post types by changing `types`:
 * `types`: comma-separated public post types used by sitemap mode.
 * `planning`: `structure-first` or `mainpage-first`.
 * `birdseye`: `true` or `false`.
+* `layout`: `horizontal` or `vertical`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
 
@@ -132,6 +134,11 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.5 =
+
+* Added a horizontal and vertical layout toggle for mindmap views.
+* Added shortcode and Elementor controls for choosing the initial layout.
 
 = 0.1.4 =
 

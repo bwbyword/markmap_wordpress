@@ -40,6 +40,10 @@
     return container.getAttribute('data-birdseye') === 'true';
   }
 
+  function getLayout(container) {
+    return container.getAttribute('data-layout') === 'vertical' ? 'vertical' : 'horizontal';
+  }
+
   function activateMode(container, mode) {
     container.setAttribute('data-mode', mode);
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
@@ -59,6 +63,23 @@
     container.querySelectorAll('.interactive-markdown-mindmap__birdseye').forEach((button) => {
       button.classList.toggle('is-active', enabled);
       button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    });
+  }
+
+  function activateLayout(container, layout) {
+    const nextLayout = layout === 'vertical' ? 'vertical' : 'horizontal';
+    container.setAttribute('data-layout', nextLayout);
+
+    container.querySelectorAll('.interactive-markdown-mindmap__layout').forEach((button) => {
+      const buttonLayout = button.getAttribute('data-layout');
+      const isToggleOnly = button.classList.contains('interactive-markdown-mindmap__icon-button');
+
+      if (isToggleOnly) {
+        button.setAttribute('data-layout', nextLayout === 'vertical' ? 'horizontal' : 'vertical');
+        button.classList.toggle('is-active', nextLayout === 'vertical');
+      } else {
+        button.classList.toggle('is-active', buttonLayout === nextLayout);
+      }
     });
   }
 
@@ -317,29 +338,135 @@
     }
   }
 
+  function collectNodes(node, nodes) {
+    if (!node) return nodes;
+
+    nodes.push(node);
+    (node.children || []).forEach((child) => collectNodes(child, nodes));
+    return nodes;
+  }
+
+  function cacheHorizontalRects(instance) {
+    collectNodes(instance.state && instance.state.data, []).forEach((node) => {
+      if (!node.state || !node.state.rect) return;
+
+      if (!node.state.horizontalRect) {
+        node.state.horizontalRect = {
+          x: node.state.rect.x,
+          y: node.state.rect.y,
+          width: node.state.rect.width,
+          height: node.state.rect.height,
+        };
+      }
+    });
+  }
+
+  function updateStateBounds(instance) {
+    const nodes = collectNodes(instance.state && instance.state.data, [])
+      .filter((node) => node.state && node.state.rect);
+
+    if (!nodes.length) return;
+
+    instance.state.rect = {
+      x1: Math.min(...nodes.map((node) => node.state.rect.x)),
+      y1: Math.min(...nodes.map((node) => node.state.rect.y)),
+      x2: Math.max(...nodes.map((node) => node.state.rect.x + node.state.rect.width)),
+      y2: Math.max(...nodes.map((node) => node.state.rect.y + node.state.rect.height)),
+    };
+  }
+
+  function projectLayoutRects(instance, layout) {
+    cacheHorizontalRects(instance);
+
+    collectNodes(instance.state && instance.state.data, []).forEach((node) => {
+      if (!node.state || !node.state.horizontalRect) return;
+
+      const rect = node.state.horizontalRect;
+      node.state.rect = layout === 'vertical'
+        ? {
+          x: rect.y,
+          y: rect.x,
+          width: rect.width,
+          height: rect.height,
+        }
+        : {
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+        };
+    });
+
+    updateStateBounds(instance);
+  }
+
+  function getLinkPath(link, layout) {
+    const sourceRect = link.source.state.rect;
+    const targetRect = link.target.state.rect;
+
+    if (layout === 'vertical') {
+      const sourceX = sourceRect.x + sourceRect.width / 2;
+      const sourceY = sourceRect.y + sourceRect.height;
+      const targetX = targetRect.x + targetRect.width / 2;
+      const targetY = targetRect.y;
+      const middleY = (sourceY + targetY) / 2;
+
+      return `M${sourceX},${sourceY}C${sourceX},${middleY} ${targetX},${middleY} ${targetX},${targetY}`;
+    }
+
+    const sourceX = sourceRect.x + sourceRect.width;
+    const sourceY = sourceRect.y + sourceRect.height;
+    const targetX = targetRect.x;
+    const targetY = targetRect.y + targetRect.height;
+    const middleX = (sourceX + targetX) / 2;
+
+    return `M${sourceX},${sourceY}C${middleX},${sourceY} ${middleX},${targetY} ${targetX},${targetY}`;
+  }
+
+  function applyLayout(container) {
+    const instance = container.markmapInstance;
+    if (!instance || !instance.state || !instance.state.data || !instance.g) return;
+
+    const layout = getLayout(container);
+    projectLayoutRects(instance, layout);
+
+    instance.g.selectAll('g.markmap-node')
+      .attr('transform', (node) => `translate(${node.state.rect.x},${node.state.rect.y})`);
+
+    instance.g.selectAll('path.markmap-link')
+      .attr('d', (link) => getLinkPath(link, layout));
+  }
+
   function renderMarkdown(container, markdown, shouldFit) {
     const svg = container.querySelector('.interactive-markdown-mindmap__svg');
     const transformer = getTransformer();
     const plan = parseContentPlan(markdown || DEFAULT_MARKDOWN, container);
     activatePlanning(container, plan.planning);
     activateBirdseye(container, plan.birdseye);
+    activateLayout(container, getLayout(container));
     const result = transformer.transform(plan.birdseye ? plan.birdseyeMarkdown : plan.cleanMarkdown);
     const options = window.markmap.deriveOptions(result.frontmatter && result.frontmatter.markmap);
     let instance = container.markmapInstance;
 
     if (!instance) {
-      instance = window.markmap.Markmap.create(svg, options, result.root);
+      instance = window.markmap.Markmap.create(svg, options);
       container.markmapInstance = instance;
     } else {
       instance.setOptions(options);
-      instance.setData(result.root);
     }
 
-    if (shouldFit !== false) {
-      window.setTimeout(() => instance.fit(), 40);
-    }
+    Promise.resolve(instance.setData(result.root)).then(() => {
+      applyLayout(container);
+      decorateMindmap(container, plan);
 
-    window.setTimeout(() => decorateMindmap(container, plan), 80);
+      if (shouldFit !== false) {
+        return instance.fit();
+      }
+
+      return null;
+    }).catch((error) => {
+      setStatus(container, error.message, true);
+    });
   }
 
   function fitWhenReady(container, delay) {
@@ -391,6 +518,7 @@
     activateMode(container, configuredMode);
     activatePlanning(container, getPlanningMode(container));
     activateBirdseye(container, isBirdseye(container));
+    activateLayout(container, getLayout(container));
 
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
       button.addEventListener('click', async () => {
@@ -425,6 +553,18 @@
           renderSitemap(container).catch((error) => setStatus(container, error.message, true));
         } else {
           renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
+        }
+      });
+    });
+
+    container.querySelectorAll('.interactive-markdown-mindmap__layout').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        activateLayout(container, button.getAttribute('data-layout') || 'horizontal');
+
+        if (container.markmapInstance) {
+          applyLayout(container);
+          window.setTimeout(() => container.markmapInstance.fit(), 40);
         }
       });
     });

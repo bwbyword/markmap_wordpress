@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Interactive Markdown Mindmap
  * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
- * Version: 0.1.4
+ * Version: 0.1.5
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Interactive_Markdown_Mindmap_Plugin {
-    private const VERSION = '0.1.4';
+    private const VERSION = '0.1.5';
     private const REST_NAMESPACE = 'interactive-markdown-mindmap/v1';
     private static ?self $instance = null;
 
@@ -258,6 +258,11 @@ final class Interactive_Markdown_Mindmap_Plugin {
                         <td><code>true</code>, <code>false</code></td>
                         <td><?php esc_html_e('Shows all content brick lists at once for a full project-scope view.', 'interactive-markdown-mindmap'); ?></td>
                     </tr>
+                    <tr>
+                        <td><code>layout</code></td>
+                        <td><code>horizontal</code>, <code>vertical</code></td>
+                        <td><?php esc_html_e('Switches between the default left-to-right mindmap and a top-to-bottom vertical layout.', 'interactive-markdown-mindmap'); ?></td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -319,6 +324,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
                 'mode' => 'markdown',
                 'planning' => 'structure-first',
                 'birdseye' => 'false',
+                'layout' => 'horizontal',
                 'types' => 'page,post',
             ],
             $atts,
@@ -328,6 +334,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
         $mode = in_array($atts['mode'], ['markdown', 'sitemap'], true) ? $atts['mode'] : 'markdown';
         $planning = in_array($atts['planning'], ['mainpage-first', 'structure-first'], true) ? $atts['planning'] : 'structure-first';
         $birdseye = filter_var($atts['birdseye'], FILTER_VALIDATE_BOOLEAN);
+        $layout = in_array($atts['layout'], ['horizontal', 'vertical'], true) ? $atts['layout'] : 'horizontal';
         $types = implode(',', $this->normalize_post_types((string) $atts['types']));
         $height_attr = $atts['heigh'] !== '' ? $atts['heigh'] : $atts['height'];
         $height = $this->sanitize_css_size((string) $height_attr);
@@ -346,6 +353,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
             data-mode="<?php echo esc_attr($mode); ?>"
             data-planning-mode="<?php echo esc_attr($planning); ?>"
             data-birdseye="<?php echo esc_attr($birdseye ? 'true' : 'false'); ?>"
+            data-layout="<?php echo esc_attr($layout); ?>"
             data-types="<?php echo esc_attr($types); ?>"
             style="--interactive-markdown-mindmap-height: <?php echo esc_attr($height); ?>;"
         >
@@ -381,6 +389,12 @@ final class Interactive_Markdown_Mindmap_Plugin {
                 </button>
                 <button class="interactive-markdown-mindmap__birdseye<?php echo esc_attr($birdseye ? ' is-active' : ''); ?>" type="button" aria-pressed="<?php echo esc_attr($birdseye ? 'true' : 'false'); ?>">
                     <?php esc_html_e('Bird\'s Eye', 'interactive-markdown-mindmap'); ?>
+                </button>
+                <button class="interactive-markdown-mindmap__layout<?php echo esc_attr($layout === 'horizontal' ? ' is-active' : ''); ?>" type="button" data-layout="horizontal">
+                    <?php esc_html_e('Horizontal', 'interactive-markdown-mindmap'); ?>
+                </button>
+                <button class="interactive-markdown-mindmap__layout<?php echo esc_attr($layout === 'vertical' ? ' is-active' : ''); ?>" type="button" data-layout="vertical">
+                    <?php esc_html_e('Vertical', 'interactive-markdown-mindmap'); ?>
                 </button>
             </div>
             <div class="interactive-markdown-mindmap__editor" data-panel="markdown">
@@ -433,6 +447,16 @@ final class Interactive_Markdown_Mindmap_Plugin {
                             <path d="M4 5h16"></path>
                             <path d="M4 12h16"></path>
                             <path d="M4 19h16"></path>
+                        </svg>
+                    </button>
+                    <button class="interactive-markdown-mindmap__icon-button interactive-markdown-mindmap__layout" type="button" data-layout="<?php echo esc_attr($layout === 'vertical' ? 'horizontal' : 'vertical'); ?>" aria-label="<?php esc_attr_e('Toggle horizontal or vertical layout', 'interactive-markdown-mindmap'); ?>">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                            <path d="M4 7h9"></path>
+                            <path d="M13 7l-3-3"></path>
+                            <path d="M13 7l-3 3"></path>
+                            <path d="M7 11v9"></path>
+                            <path d="M7 20l-3-3"></path>
+                            <path d="M7 20l3-3"></path>
                         </svg>
                     </button>
                 </div>

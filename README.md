@@ -15,6 +15,7 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 - Mainpage First and Structure First planning modes.
 - Bird's Eye View for seeing every content brick list at once.
 - Brick count badges on collapsed page nodes.
+- Horizontal and vertical mindmap layout toggle.
 - Subtle zoom, fit, and fullscreen controls for clean page embeds.
 - Elementor editor preview support after the Shortcode widget preview refreshes.
 - Bundled local browser assets for `d3`, `markmap-view`, and `markmap-lib`.
@@ -52,6 +53,8 @@ This displays the interactive Markdown editor, file upload control, and mindmap 
 ## Elementor Widget
 
 In Elementor, drag **Interactive Markdown Mindmap** into the layout. Edit Markdown directly in the widget's Content panel, set the canvas height, or switch the source to Visual Site Map to generate a mindmap from public content types.
+
+Use the Layout control to choose the default horizontal or vertical mindmap view.
 
 ## Read-Only Markdown Embed
 
@@ -115,6 +118,7 @@ Supported brick type tags include `[image]`, `[text]`, `[video]`, `[form]`, `[li
 - `types`: comma-separated public post types used by sitemap mode.
 - `planning`: `structure-first` or `mainpage-first`.
 - `birdseye`: `true` or `false`.
+- `layout`: `horizontal` or `vertical`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
 

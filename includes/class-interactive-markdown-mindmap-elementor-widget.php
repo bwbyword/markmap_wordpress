@@ -120,6 +120,19 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
             ]
         );
 
+        $this->add_control(
+            'layout',
+            [
+                'label' => __('Layout', 'interactive-markdown-mindmap'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => 'horizontal',
+                'options' => [
+                    'horizontal' => __('Horizontal', 'interactive-markdown-mindmap'),
+                    'vertical' => __('Vertical', 'interactive-markdown-mindmap'),
+                ],
+            ]
+        );
+
         $this->end_controls_section();
     }
 
@@ -134,6 +147,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
                 'height' => isset($settings['height']) ? (string) $settings['height'] : '640px',
                 'planning' => isset($settings['planning']) ? (string) $settings['planning'] : 'structure-first',
                 'birdseye' => !empty($settings['birdseye']) ? 'true' : 'false',
+                'layout' => isset($settings['layout']) ? (string) $settings['layout'] : 'horizontal',
                 'types' => isset($settings['types']) ? (string) $settings['types'] : 'page,post',
             ],
             $mode === 'markdown' ? $markdown : null,
