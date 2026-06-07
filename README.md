@@ -11,6 +11,10 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 - Markdown mode with an editor and `.md` file upload.
 - Read-only Markdown embeds using enclosing shortcode content.
 - Sitemap mode for generating a visual mindmap from published WordPress content.
+- Content Brick syntax for planning page sections inside Markdown.
+- Mainpage First and Structure First planning modes.
+- Bird's Eye View for seeing every content brick list at once.
+- Brick count badges on collapsed page nodes.
 - Subtle zoom, fit, and fullscreen controls for clean page embeds.
 - Elementor editor preview support after the Shortcode widget preview refreshes.
 - Bundled local browser assets for `d3`, `markmap-view`, and `markmap-lib`.
@@ -83,11 +87,34 @@ The `types` option accepts comma-separated public post types, such as:
 [interactive_markdown_mindmap mode="sitemap" types="page,post,product"]
 ```
 
+## Content Bricks
+
+Add content bricks as indented list items under any page or section:
+
+```text
+# Website Plan
+
+## Homepage
+- [brick][header] Header
+- [brick][image] Hero
+- [brick][text] About
+
+## Contact
+- [brick][form] Contact Form
+- [brick][footer] Footer
+```
+
+Normal view shows a brick count badge on the parent node. Bird's Eye View expands all brick lists at once.
+
+Supported brick type tags include `[image]`, `[text]`, `[video]`, `[form]`, `[list]`, `[header]`, and `[footer]`.
+
 ## Shortcode Options
 
 - `mode`: `markdown` or `sitemap`.
 - `height`: CSS size for the mindmap canvas, such as `640px`, `70vh`, or `100%`.
 - `types`: comma-separated public post types used by sitemap mode.
+- `planning`: `structure-first` or `mainpage-first`.
+- `birdseye`: `true` or `false`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
 

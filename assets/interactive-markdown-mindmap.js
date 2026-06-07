@@ -1,6 +1,7 @@
 (function () {
-  const DEFAULT_MARKDOWN = '# Mindmap\n\n## Start\n- Paste Markdown\n- Upload a `.md` file\n';
+  const DEFAULT_MARKDOWN = '# Mindmap\n\n## Homepage\n- [brick][header] Header\n- [brick][image] Hero\n\n## Contact\n- [brick][form] Contact Form\n';
   const initializedContainers = new WeakSet();
+  const BRICK_TYPES = ['image', 'text', 'video', 'form', 'list', 'header', 'footer'];
 
   function ready(callback) {
     if (document.readyState === 'loading') {
@@ -31,10 +32,33 @@
     return container.getAttribute('data-types') || 'page,post';
   }
 
+  function getPlanningMode(container) {
+    return container.getAttribute('data-planning-mode') === 'mainpage-first' ? 'mainpage-first' : 'structure-first';
+  }
+
+  function isBirdseye(container) {
+    return container.getAttribute('data-birdseye') === 'true';
+  }
+
   function activateMode(container, mode) {
     container.setAttribute('data-mode', mode);
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
       button.classList.toggle('is-active', button.getAttribute('data-mode') === mode);
+    });
+  }
+
+  function activatePlanning(container, planningMode) {
+    container.setAttribute('data-planning-mode', planningMode);
+    container.querySelectorAll('.interactive-markdown-mindmap__planning').forEach((button) => {
+      button.classList.toggle('is-active', button.getAttribute('data-planning-mode') === planningMode);
+    });
+  }
+
+  function activateBirdseye(container, enabled) {
+    container.setAttribute('data-birdseye', enabled ? 'true' : 'false');
+    container.querySelectorAll('.interactive-markdown-mindmap__birdseye').forEach((button) => {
+      button.classList.toggle('is-active', enabled);
+      button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     });
   }
 
@@ -50,10 +74,215 @@
     }
   }
 
+  function stripMarkdown(value) {
+    return value
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/[*_`~]/g, '')
+      .replace(/<[^>]+>/g, '')
+      .trim();
+  }
+
+  function normalizeLabel(value) {
+    return stripMarkdown(value).replace(/\s+/g, ' ').toLowerCase();
+  }
+
+  function parseBrick(content) {
+    let working = content.trim();
+    let type = '';
+
+    const prefix = working.match(/^\[brick(?::([a-z-]+))?\]\s*/i);
+    if (!prefix) return null;
+
+    if (prefix[1]) {
+      type = prefix[1].toLowerCase();
+    }
+
+    working = working.slice(prefix[0].length).trim();
+
+    const typePrefix = working.match(/^\[([a-z-]+)\]\s*/i);
+    if (typePrefix && BRICK_TYPES.includes(typePrefix[1].toLowerCase())) {
+      type = typePrefix[1].toLowerCase();
+      working = working.slice(typePrefix[0].length).trim();
+    }
+
+    const typeSuffix = working.match(/\s+\[([a-z-]+)\]\s*$/i);
+    if (typeSuffix && BRICK_TYPES.includes(typeSuffix[1].toLowerCase())) {
+      type = typeSuffix[1].toLowerCase();
+      working = working.slice(0, typeSuffix.index).trim();
+    }
+
+    return {
+      name: stripMarkdown(working || 'Content Brick'),
+      type: BRICK_TYPES.includes(type) ? type : 'text',
+    };
+  }
+
+  function parseDirective(line) {
+    const match = line.match(/<!--\s*imm:\s*([^>]+)-->/i);
+    if (!match) return {};
+
+    return match[1].split(/\s+/).reduce((directives, item) => {
+      const parts = item.split('=');
+      if (parts.length === 2) {
+        directives[parts[0].toLowerCase()] = parts[1].toLowerCase();
+      }
+      return directives;
+    }, {});
+  }
+
+  function isDirectiveLine(line) {
+    return /<!--\s*imm:\s*([^>]+)-->/i.test(line);
+  }
+
+  function getNearestParent(stack, indent) {
+    const keys = Object.keys(stack).map(Number).filter((key) => key < indent).sort((a, b) => b - a);
+    return keys.length ? stack[keys[0]] : stack[Object.keys(stack).map(Number).sort((a, b) => a - b)[0]];
+  }
+
+  function parseContentPlan(markdown, container) {
+    const lines = (markdown || DEFAULT_MARKDOWN).split(/\n/);
+    const stack = {};
+    const cleanLines = [];
+    const birdseyeLines = [];
+    const bricksByLabel = new Map();
+    let lastContentLabel = '';
+    let rootLabel = '';
+    let directivePlanning = '';
+    let directiveBirdseye = null;
+
+    lines.forEach((line) => {
+      const directive = parseDirective(line);
+      if (directive.planning) directivePlanning = directive.planning;
+      if (directive.birdseye) directiveBirdseye = ['true', '1', 'yes'].includes(directive.birdseye);
+      if (isDirectiveLine(line)) return;
+
+      const heading = line.match(/^\s{0,3}(#{1,6})\s+(.+)$/);
+      if (heading) {
+        const indent = (heading[1].length - 1) * 2;
+        const label = stripMarkdown(heading[2]);
+        stack[indent] = label;
+        lastContentLabel = label;
+        Object.keys(stack).map(Number).filter((key) => key > indent).forEach((key) => delete stack[key]);
+        if (!rootLabel) rootLabel = label;
+        cleanLines.push(line);
+        birdseyeLines.push(line);
+        return;
+      }
+
+      const list = line.match(/^(\s*)([-*+])\s+(.+)$/);
+      if (!list) {
+        cleanLines.push(line);
+        birdseyeLines.push(line);
+        return;
+      }
+
+      const indent = list[1].replace(/\t/g, '  ').length;
+      const brick = parseBrick(list[3]);
+
+      if (!brick) {
+        const label = stripMarkdown(list[3]);
+        stack[indent] = label;
+        lastContentLabel = label;
+        Object.keys(stack).map(Number).filter((key) => key > indent).forEach((key) => delete stack[key]);
+        if (!rootLabel) rootLabel = label;
+        cleanLines.push(line);
+        birdseyeLines.push(line);
+        return;
+      }
+
+      const parentLabel = lastContentLabel || getNearestParent(stack, indent) || rootLabel || 'Mindmap';
+      const key = normalizeLabel(parentLabel);
+      const existing = bricksByLabel.get(key) || {
+        label: parentLabel,
+        bricks: [],
+      };
+
+      existing.bricks.push(brick);
+      bricksByLabel.set(key, existing);
+      birdseyeLines.push(`${list[1]}${list[2]} ${brick.type.toUpperCase()} - ${brick.name}`);
+    });
+
+    const planning = ['mainpage-first', 'structure-first'].includes(directivePlanning) ? directivePlanning : getPlanningMode(container);
+    const birdseye = directiveBirdseye === null ? isBirdseye(container) : directiveBirdseye;
+
+    return {
+      birdseye,
+      birdseyeMarkdown: birdseyeLines.join('\n'),
+      bricksByLabel,
+      cleanMarkdown: cleanLines.join('\n'),
+      planning,
+      rootLabel,
+    };
+  }
+
+  function removeDecorations(svg) {
+    svg.querySelectorAll('.interactive-markdown-mindmap__badge, .interactive-markdown-mindmap__prompt').forEach((node) => node.remove());
+    svg.querySelectorAll('.interactive-markdown-mindmap__mainpage-node').forEach((node) => {
+      node.classList.remove('interactive-markdown-mindmap__mainpage-node');
+    });
+  }
+
+  function appendDecoration(element, text, className) {
+    if (element.namespaceURI === 'http://www.w3.org/2000/svg') {
+      const item = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+      item.setAttribute('class', className);
+      item.setAttribute('dx', '8');
+      item.textContent = text;
+      element.appendChild(item);
+      return;
+    }
+
+    const item = document.createElement('span');
+    item.className = className;
+    item.textContent = text;
+    element.appendChild(item);
+  }
+
+  function decorateMindmap(container, plan) {
+    const svg = container.querySelector('.interactive-markdown-mindmap__svg');
+    if (!svg) return;
+
+    removeDecorations(svg);
+
+    const texts = [
+      ...svg.querySelectorAll('text'),
+      ...svg.querySelectorAll('.markmap-foreign > div > div'),
+    ];
+    const rootKey = normalizeLabel(plan.rootLabel || '');
+
+    texts.forEach((text, index) => {
+      const label = normalizeLabel(text.textContent || '');
+      const brickGroup = plan.bricksByLabel.get(label);
+
+      if (brickGroup && brickGroup.bricks.length && !plan.birdseye) {
+        appendDecoration(text, `${brickGroup.bricks.length} bricks`, 'interactive-markdown-mindmap__badge');
+      }
+
+      if (plan.planning === 'mainpage-first' && (label === rootKey || (!rootKey && index === 0))) {
+        const node = text.closest('g');
+        if (node) node.classList.add('interactive-markdown-mindmap__mainpage-node');
+
+        appendDecoration(text, brickGroup && brickGroup.bricks.length ? 'mainpage ready' : 'start here', 'interactive-markdown-mindmap__prompt');
+      }
+    });
+
+    if (plan.planning === 'mainpage-first') {
+      const rootBricks = plan.bricksByLabel.get(rootKey);
+      setStatus(container, rootBricks && rootBricks.bricks.length
+        ? 'Mainpage First: root content bricks are defined. Continue branching when ready.'
+        : 'Mainpage First: define content bricks for the root page before branching out.');
+    } else {
+      setStatus(container, plan.birdseye ? 'Bird\'s Eye View: all content bricks are visible.' : '');
+    }
+  }
+
   function renderMarkdown(container, markdown, shouldFit) {
     const svg = container.querySelector('.interactive-markdown-mindmap__svg');
     const transformer = getTransformer();
-    const result = transformer.transform(markdown || DEFAULT_MARKDOWN);
+    const plan = parseContentPlan(markdown || DEFAULT_MARKDOWN, container);
+    activatePlanning(container, plan.planning);
+    activateBirdseye(container, plan.birdseye);
+    const result = transformer.transform(plan.birdseye ? plan.birdseyeMarkdown : plan.cleanMarkdown);
     const options = window.markmap.deriveOptions(result.frontmatter && result.frontmatter.markmap);
     let instance = container.markmapInstance;
 
@@ -68,6 +297,8 @@
     if (shouldFit !== false) {
       window.setTimeout(() => instance.fit(), 40);
     }
+
+    window.setTimeout(() => decorateMindmap(container, plan), 80);
   }
 
   function fitWhenReady(container, delay) {
@@ -117,6 +348,8 @@
     const embeddedMarkdown = getEmbeddedMarkdown(container);
 
     activateMode(container, configuredMode);
+    activatePlanning(container, getPlanningMode(container));
+    activateBirdseye(container, isBirdseye(container));
 
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
       button.addEventListener('click', async () => {
@@ -132,6 +365,25 @@
           }
         } catch (error) {
           setStatus(container, error.message, true);
+        }
+      });
+    });
+
+    container.querySelectorAll('.interactive-markdown-mindmap__planning').forEach((button) => {
+      button.addEventListener('click', () => {
+        activatePlanning(container, button.getAttribute('data-planning-mode') || 'structure-first');
+        renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
+      });
+    });
+
+    container.querySelectorAll('.interactive-markdown-mindmap__birdseye').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        activateBirdseye(container, !isBirdseye(container));
+        if (container.getAttribute('data-mode') === 'sitemap') {
+          renderSitemap(container).catch((error) => setStatus(container, error.message, true));
+        } else {
+          renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
         }
       });
     });

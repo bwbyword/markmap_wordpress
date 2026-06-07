@@ -65,7 +65,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
             [
                 'label' => __('Markdown', 'interactive-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => "# Mindmap\n\n## Discovery\n- Research\n- Notes\n\n## Build\n- Draft\n- Publish",
+                'default' => "# Website Plan\n\n## Homepage\n- [brick][header] Header\n- [brick][image] Hero\n- [brick][text] About\n\n## Contact\n- [brick][form] Contact Form\n- [brick][footer] Footer",
                 'rows' => 14,
                 'condition' => [
                     'mode' => 'markdown',
@@ -82,6 +82,31 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
                 'condition' => [
                     'mode' => 'sitemap',
                 ],
+            ]
+        );
+
+        $this->add_control(
+            'planning',
+            [
+                'label' => __('Planning Mode', 'interactive-markdown-mindmap'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => 'structure-first',
+                'options' => [
+                    'structure-first' => __('Structure First', 'interactive-markdown-mindmap'),
+                    'mainpage-first' => __('Mainpage First', 'interactive-markdown-mindmap'),
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'birdseye',
+            [
+                'label' => __('Bird\'s Eye View', 'interactive-markdown-mindmap'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'label_on' => __('Show', 'interactive-markdown-mindmap'),
+                'label_off' => __('Hide', 'interactive-markdown-mindmap'),
+                'return_value' => 'true',
+                'default' => '',
             ]
         );
 
@@ -107,6 +132,8 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
             [
                 'mode' => $mode,
                 'height' => isset($settings['height']) ? (string) $settings['height'] : '640px',
+                'planning' => isset($settings['planning']) ? (string) $settings['planning'] : 'structure-first',
+                'birdseye' => !empty($settings['birdseye']) ? 'true' : 'false',
                 'types' => isset($settings['types']) ? (string) $settings['types'] : 'page,post',
             ],
             $mode === 'markdown' ? $markdown : null,

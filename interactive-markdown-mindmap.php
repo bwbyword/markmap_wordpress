@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Interactive Markdown Mindmap
  * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
- * Version: 0.1.3
+ * Version: 0.1.4
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Interactive_Markdown_Mindmap_Plugin {
-    private const VERSION = '0.1.3';
+    private const VERSION = '0.1.4';
     private const REST_NAMESPACE = 'interactive-markdown-mindmap/v1';
     private static ?self $instance = null;
 
@@ -210,6 +210,19 @@ final class Interactive_Markdown_Mindmap_Plugin {
             <?php $this->render_code_example('[interactive_markdown_mindmap mode="sitemap" height="70vh" types="page,post"]'); ?>
             <?php $this->render_code_example('[interactive_markdown_mindmap mode="sitemap" types="page,post,product"]'); ?>
 
+            <h2><?php esc_html_e('Content Bricks', 'interactive-markdown-mindmap'); ?></h2>
+            <p><?php esc_html_e('Add content bricks as indented list items under a page or section. Normal view shows a brick count badge on the parent node; Bird\'s Eye View expands all brick lists.', 'interactive-markdown-mindmap'); ?></p>
+            <?php $this->render_code_example('# Website Plan
+
+## Homepage
+- [brick][header] Header
+- [brick][image] Hero
+- [brick][text] About
+
+## Contact
+- [brick][form] Contact Form
+- [brick][footer] Footer'); ?>
+
             <h2><?php esc_html_e('Shortcode Options', 'interactive-markdown-mindmap'); ?></h2>
             <table class="widefat striped" style="max-width: 900px;">
                 <thead>
@@ -234,6 +247,16 @@ final class Interactive_Markdown_Mindmap_Plugin {
                         <td><code>types</code></td>
                         <td><code>page,post</code></td>
                         <td><?php esc_html_e('Controls which public post types are included in sitemap mode.', 'interactive-markdown-mindmap'); ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>planning</code></td>
+                        <td><code>structure-first</code>, <code>mainpage-first</code></td>
+                        <td><?php esc_html_e('Controls whether users plan the hierarchy first or prioritize the root page content bricks first.', 'interactive-markdown-mindmap'); ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>birdseye</code></td>
+                        <td><code>true</code>, <code>false</code></td>
+                        <td><?php esc_html_e('Shows all content brick lists at once for a full project-scope view.', 'interactive-markdown-mindmap'); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -294,6 +317,8 @@ final class Interactive_Markdown_Mindmap_Plugin {
                 'height' => '640px',
                 'heigh' => '',
                 'mode' => 'markdown',
+                'planning' => 'structure-first',
+                'birdseye' => 'false',
                 'types' => 'page,post',
             ],
             $atts,
@@ -301,6 +326,8 @@ final class Interactive_Markdown_Mindmap_Plugin {
         );
 
         $mode = in_array($atts['mode'], ['markdown', 'sitemap'], true) ? $atts['mode'] : 'markdown';
+        $planning = in_array($atts['planning'], ['mainpage-first', 'structure-first'], true) ? $atts['planning'] : 'structure-first';
+        $birdseye = filter_var($atts['birdseye'], FILTER_VALIDATE_BOOLEAN);
         $types = implode(',', $this->normalize_post_types((string) $atts['types']));
         $height_attr = $atts['heigh'] !== '' ? $atts['heigh'] : $atts['height'];
         $height = $this->sanitize_css_size((string) $height_attr);
@@ -317,6 +344,8 @@ final class Interactive_Markdown_Mindmap_Plugin {
             id="<?php echo esc_attr($instance_id); ?>"
             class="interactive-markdown-mindmap<?php echo $is_view_only ? ' interactive-markdown-mindmap--view-only' : ''; ?>"
             data-mode="<?php echo esc_attr($mode); ?>"
+            data-planning-mode="<?php echo esc_attr($planning); ?>"
+            data-birdseye="<?php echo esc_attr($birdseye ? 'true' : 'false'); ?>"
             data-types="<?php echo esc_attr($types); ?>"
             style="--interactive-markdown-mindmap-height: <?php echo esc_attr($height); ?>;"
         >
@@ -344,17 +373,27 @@ final class Interactive_Markdown_Mindmap_Plugin {
                 <button class="interactive-markdown-mindmap__zoom-in" type="button">
                     <?php esc_html_e('Zoom in', 'interactive-markdown-mindmap'); ?>
                 </button>
+                <button class="interactive-markdown-mindmap__planning<?php echo esc_attr($planning === 'structure-first' ? ' is-active' : ''); ?>" type="button" data-planning-mode="structure-first">
+                    <?php esc_html_e('Structure first', 'interactive-markdown-mindmap'); ?>
+                </button>
+                <button class="interactive-markdown-mindmap__planning<?php echo esc_attr($planning === 'mainpage-first' ? ' is-active' : ''); ?>" type="button" data-planning-mode="mainpage-first">
+                    <?php esc_html_e('Mainpage first', 'interactive-markdown-mindmap'); ?>
+                </button>
+                <button class="interactive-markdown-mindmap__birdseye<?php echo esc_attr($birdseye ? ' is-active' : ''); ?>" type="button" aria-pressed="<?php echo esc_attr($birdseye ? 'true' : 'false'); ?>">
+                    <?php esc_html_e('Bird\'s Eye', 'interactive-markdown-mindmap'); ?>
+                </button>
             </div>
             <div class="interactive-markdown-mindmap__editor" data-panel="markdown">
                 <textarea spellcheck="false"># Mindmap
 
-## Paste Markdown
-- Headings become branches
-- Lists become child nodes
+## Homepage
+- [brick][header] Header
+- [brick][image] Hero
+- [brick][text] About
 
-## Or Upload
-- Choose a `.md` file above
-- The mindmap updates instantly</textarea>
+## Contact
+- [brick][form] Contact Form
+- [brick][footer] Footer</textarea>
             </div>
             <?php endif; ?>
             <div class="interactive-markdown-mindmap__status" aria-live="polite"></div>
@@ -387,6 +426,13 @@ final class Interactive_Markdown_Mindmap_Plugin {
                             <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
                             <path d="M21 16v3a2 2 0 0 1-2 2h-3"></path>
                             <path d="M8 21H5a2 2 0 0 1-2-2v-3"></path>
+                        </svg>
+                    </button>
+                    <button class="interactive-markdown-mindmap__icon-button interactive-markdown-mindmap__birdseye" type="button" aria-label="<?php esc_attr_e('Toggle Bird\'s Eye View', 'interactive-markdown-mindmap'); ?>" aria-pressed="<?php echo esc_attr($birdseye ? 'true' : 'false'); ?>">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                            <path d="M4 5h16"></path>
+                            <path d="M4 12h16"></path>
+                            <path d="M4 19h16"></path>
                         </svg>
                     </button>
                 </div>

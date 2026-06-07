@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,10 @@ The plugin supports:
 * Markdown mode with an editor and `.md` file upload.
 * Read-only Markdown embeds using enclosing shortcode content.
 * Sitemap mode for generating a visual mindmap from published WordPress content.
+* Content Brick planning syntax for defining page sections inside Markdown.
+* Mainpage First and Structure First planning modes.
+* Bird's Eye View for showing all content brick lists at once.
+* Brick count badges on collapsed page nodes.
 * Subtle zoom, fit, and fullscreen controls for clean page embeds.
 * Drag-and-drop Elementor widget with a Markdown editing box in the Elementor Content panel.
 * Elementor editor preview support after widget or shortcode preview updates.
@@ -60,6 +64,25 @@ Place Markdown between the opening and closing shortcode tags:
 
 When Markdown is supplied this way, the plugin renders only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls.
 
+= Content bricks =
+
+Add content bricks under any page or section:
+
+`
+# Website Plan
+
+## Homepage
+- [brick][header] Header
+- [brick][image] Hero
+- [brick][text] About
+
+## Contact
+- [brick][form] Contact Form
+- [brick][footer] Footer
+`
+
+Supported brick type tags include `[image]`, `[text]`, `[video]`, `[form]`, `[list]`, `[header]`, and `[footer]`.
+
 = Visual sitemap =
 
 Generate a mindmap from published WordPress pages and posts:
@@ -75,6 +98,8 @@ Include additional public post types by changing `types`:
 * `mode`: `markdown` or `sitemap`.
 * `height`: CSS size for the mindmap canvas, such as `640px`, `70vh`, or `100%`.
 * `types`: comma-separated public post types used by sitemap mode.
+* `planning`: `structure-first` or `mainpage-first`.
+* `birdseye`: `true` or `false`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
 
@@ -107,6 +132,13 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.4 =
+
+* Added Content Brick syntax for page-section planning.
+* Added Mainpage First and Structure First planning modes.
+* Added Bird's Eye View for expanded content-brick planning.
+* Added brick count badges to collapsed page nodes.
 
 = 0.1.3 =
 

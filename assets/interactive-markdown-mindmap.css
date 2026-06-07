@@ -52,6 +52,12 @@
   color: #ffffff;
 }
 
+.interactive-markdown-mindmap__planning.is-active,
+.interactive-markdown-mindmap__birdseye.is-active {
+  border-color: var(--interactive-markdown-mindmap-accent);
+  color: var(--interactive-markdown-mindmap-accent);
+}
+
 .interactive-markdown-mindmap__file input {
   height: 1px;
   opacity: 0;
@@ -183,6 +189,34 @@
   stroke-linejoin: round;
   stroke-width: 1.8;
   width: 18px;
+}
+
+.interactive-markdown-mindmap__badge,
+.interactive-markdown-mindmap__prompt {
+  dominant-baseline: middle;
+  fill: var(--interactive-markdown-mindmap-accent);
+  font-size: 0.72em;
+  font-weight: 700;
+  margin-left: 0.55em;
+}
+
+.interactive-markdown-mindmap__prompt {
+  fill: #a15c12;
+  color: #a15c12;
+}
+
+span.interactive-markdown-mindmap__badge {
+  background: rgba(20, 108, 95, 0.11);
+  border-radius: 999px;
+  color: var(--interactive-markdown-mindmap-accent);
+  display: inline-block;
+  padding: 0.05em 0.45em;
+  vertical-align: middle;
+}
+
+.interactive-markdown-mindmap__mainpage-node circle {
+  stroke: #a15c12;
+  stroke-width: 2.4px;
 }
 
 .interactive-markdown-mindmap--view-only:fullscreen {
