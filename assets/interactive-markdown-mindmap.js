@@ -252,6 +252,10 @@
     const bind = () => {
       if (!window.elementorFrontend || !window.elementorFrontend.hooks) return;
 
+      window.elementorFrontend.hooks.addAction('frontend/element_ready/interactive_markdown_mindmap.default', ($scope) => {
+        initializeAll($scope && $scope[0] ? $scope[0] : document);
+      });
+
       window.elementorFrontend.hooks.addAction('frontend/element_ready/shortcode.default', ($scope) => {
         initializeAll($scope && $scope[0] ? $scope[0] : document);
       });

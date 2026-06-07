@@ -23,7 +23,9 @@ jobs:
           coverage: none
 
       - name: Lint PHP
-        run: php -l interactive-markdown-mindmap.php
+        run: |
+          php -l interactive-markdown-mindmap.php
+          php -l includes/class-interactive-markdown-mindmap-elementor-widget.php
 
       - name: Check JavaScript syntax
         run: |
@@ -34,7 +36,7 @@ jobs:
 
       - name: Check bundled executable assets
         run: |
-          if grep -R -n -E 'cdn\.jsdelivr|unpkg\.com|esm\.sh|https://cdn|http://cdn' interactive-markdown-mindmap.php assets; then
+          if grep -R -n -E 'cdn\.jsdelivr|unpkg\.com|esm\.sh|https://cdn|http://cdn' interactive-markdown-mindmap.php includes assets; then
             echo "Unexpected public CDN reference found in executable plugin files."
             exit 1
           fi

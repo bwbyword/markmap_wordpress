@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Interactive Markdown Mindmap
  * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
- * Version: 0.1.2
+ * Version: 0.1.3
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,21 +18,69 @@ if (!defined('ABSPATH')) {
 }
 
 final class Interactive_Markdown_Mindmap_Plugin {
-    private const VERSION = '0.1.2';
+    private const VERSION = '0.1.3';
     private const REST_NAMESPACE = 'interactive-markdown-mindmap/v1';
+    private static ?self $instance = null;
 
     public function __construct() {
+        self::$instance = $this;
+
         add_action('init', [$this, 'register_shortcodes']);
         add_action('wp_enqueue_scripts', [$this, 'register_assets']);
         add_action('elementor/frontend/after_enqueue_scripts', [$this, 'enqueue_assets']);
         add_action('elementor/editor/after_enqueue_scripts', [$this, 'enqueue_assets']);
+        add_action('elementor/elements/categories_registered', [$this, 'register_elementor_category']);
+        add_action('elementor/widgets/register', [$this, 'register_elementor_widgets']);
         add_action('admin_menu', [$this, 'register_admin_page']);
         add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$this, 'add_plugin_action_links']);
         add_action('rest_api_init', [$this, 'register_rest_routes']);
     }
 
+    public static function instance(): self {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
     public function register_shortcodes(): void {
         add_shortcode('interactive_markdown_mindmap', [$this, 'render_shortcode']);
+    }
+
+    public function register_elementor_category($elements_manager): void {
+        if (!method_exists($elements_manager, 'add_category')) {
+            return;
+        }
+
+        $elements_manager->add_category(
+            'interactive-markdown-mindmap',
+            [
+                'title' => __('Interactive Markdown', 'interactive-markdown-mindmap'),
+                'icon' => 'fa fa-sitemap',
+            ]
+        );
+    }
+
+    public function register_elementor_widgets($widgets_manager): void {
+        if (!class_exists('\Elementor\Widget_Base')) {
+            return;
+        }
+
+        $this->register_assets();
+
+        if (!class_exists('Interactive_Markdown_Mindmap_Elementor_Widget')) {
+            require_once __DIR__ . '/includes/class-interactive-markdown-mindmap-elementor-widget.php';
+        }
+
+        if (method_exists($widgets_manager, 'register')) {
+            $widgets_manager->register(new \Interactive_Markdown_Mindmap_Elementor_Widget());
+            return;
+        }
+
+        if (method_exists($widgets_manager, 'register_widget_type')) {
+            $widgets_manager->register_widget_type(new \Interactive_Markdown_Mindmap_Elementor_Widget());
+        }
     }
 
     public function register_admin_page(): void {
@@ -125,7 +173,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
         <div class="wrap">
             <h1><?php esc_html_e('Interactive Markdown Mindmap Usage', 'interactive-markdown-mindmap'); ?></h1>
             <p>
-                <?php esc_html_e('Use the shortcode below to render Markdown mindmaps or visual sitemaps inside WordPress pages, posts, and Elementor Shortcode widgets.', 'interactive-markdown-mindmap'); ?>
+                <?php esc_html_e('Use the shortcode below to render Markdown mindmaps or visual sitemaps inside WordPress pages, posts, and Elementor layouts.', 'interactive-markdown-mindmap'); ?>
             </p>
 
             <h2><?php esc_html_e('Quick Start', 'interactive-markdown-mindmap'); ?></h2>
@@ -181,7 +229,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
 
             <h2><?php esc_html_e('Elementor', 'interactive-markdown-mindmap'); ?></h2>
             <p>
-                <?php esc_html_e('Use the Shortcode widget and paste any Interactive Markdown Mindmap shortcode. Elementor usually refreshes shortcode previews after you click Apply; after the preview updates, the mindmap should render inside the editor.', 'interactive-markdown-mindmap'); ?>
+                <?php esc_html_e('Drag the Interactive Markdown Mindmap widget into an Elementor layout, then edit Markdown directly in the widget Content panel. The standard Elementor Shortcode widget can still render the shortcode if you prefer shortcode-based embeds.', 'interactive-markdown-mindmap'); ?>
             </p>
 
             <h2><?php esc_html_e('Troubleshooting', 'interactive-markdown-mindmap'); ?></h2>
@@ -226,6 +274,10 @@ final class Interactive_Markdown_Mindmap_Plugin {
     }
 
     public function render_shortcode($atts, ?string $content = null): string {
+        return $this->render_mindmap((array) $atts, $content, false);
+    }
+
+    public function render_mindmap(array $atts, ?string $content = null, bool $force_view_only = false): string {
         $atts = shortcode_atts(
             [
                 'height' => '640px',
@@ -242,7 +294,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
         $height_attr = $atts['heigh'] !== '' ? $atts['heigh'] : $atts['height'];
         $height = $this->sanitize_css_size((string) $height_attr);
         $markdown_content = $this->normalize_markdown_content($content);
-        $is_view_only = $mode === 'markdown' && $markdown_content !== '';
+        $is_view_only = $force_view_only || ($mode === 'markdown' && $markdown_content !== '');
 
         $this->enqueue_assets();
 
@@ -257,7 +309,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
             data-types="<?php echo esc_attr($types); ?>"
             style="--interactive-markdown-mindmap-height: <?php echo esc_attr($height); ?>;"
         >
-            <?php if ($is_view_only) : ?>
+            <?php if ($is_view_only && $mode === 'markdown') : ?>
                 <script type="application/json" class="interactive-markdown-mindmap__source"><?php echo wp_json_encode($markdown_content, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
             <?php endif; ?>
             <?php if (!$is_view_only) : ?>

@@ -6,6 +6,7 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 
 ## Features
 
+- Native drag-and-drop Elementor widget with a Markdown editing box in the Elementor Content panel.
 - `[interactive_markdown_mindmap]` shortcode for pages, posts, and Elementor Shortcode widgets.
 - Markdown mode with an editor and `.md` file upload.
 - Read-only Markdown embeds using enclosing shortcode content.
@@ -43,6 +44,10 @@ Add the shortcode to any WordPress page or post:
 ```
 
 This displays the interactive Markdown editor, file upload control, and mindmap canvas.
+
+## Elementor Widget
+
+In Elementor, drag **Interactive Markdown Mindmap** into the layout. Edit Markdown directly in the widget's Content panel, set the canvas height, or switch the source to Visual Site Map to generate a mindmap from public content types.
 
 ## Read-Only Markdown Embed
 

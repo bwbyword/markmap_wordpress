@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.2
+Stable tag: 0.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,8 @@ The plugin supports:
 * Read-only Markdown embeds using enclosing shortcode content.
 * Sitemap mode for generating a visual mindmap from published WordPress content.
 * Subtle zoom, fit, and fullscreen controls for clean page embeds.
-* Elementor editor preview support after the Shortcode widget preview updates.
+* Drag-and-drop Elementor widget with a Markdown editing box in the Elementor Content panel.
+* Elementor editor preview support after widget or shortcode preview updates.
 
 The visual renderer uses local bundled browser assets for `d3`, `markmap-view`, and `markmap-lib`.
 
@@ -79,9 +80,9 @@ Include additional public post types by changing `types`:
 
 == Elementor ==
 
-Use Elementor's Shortcode widget and paste any Interactive Markdown Mindmap shortcode.
+Drag the **Interactive Markdown Mindmap** widget into an Elementor layout, then edit Markdown in the widget's Content panel.
 
-Elementor usually refreshes shortcode previews after you click **Apply**. After the preview updates, the mindmap should render inside the editor.
+You can also use Elementor's Shortcode widget and paste any Interactive Markdown Mindmap shortcode. Elementor usually refreshes shortcode previews after you click **Apply**. After the preview updates, the mindmap should render inside the editor.
 
 == Frequently Asked Questions ==
 
@@ -106,6 +107,12 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.3 =
+
+* Added a native drag-and-drop Elementor widget.
+* Added Markdown editing in the Elementor widget Content panel.
+* Added visual site map mode to the Elementor widget.
 
 = 0.1.2 =
 
