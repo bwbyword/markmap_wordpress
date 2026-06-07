@@ -24,6 +24,14 @@ wp-content/plugins/markmap-mindmap
 
 Then activate **Markmap Mindmap** in WordPress Admin > Plugins.
 
+The main plugin file must be directly inside the plugin folder:
+
+```text
+wp-content/plugins/markmap-mindmap/markmap-mindmap.php
+```
+
+If the files are nested one level deeper, WordPress will not show the plugin in the Plugins list.
+
 After activation, open **Settings > Markmap Mindmap** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
 
 ## Basic Usage
