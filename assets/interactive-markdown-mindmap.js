@@ -653,15 +653,23 @@
     const svg = container.querySelector('.interactive-markdown-mindmap__svg');
     const transformer = getTransformer();
     const plan = parseContentPlan(markdown || DEFAULT_MARKDOWN, container);
+    const layout = getLayout(container);
     const renderToken = (container.markmapRenderToken || 0) + 1;
     container.markmapRenderToken = renderToken;
     container.currentMindmapPlan = plan;
     activatePlanning(container, plan.planning);
     activateBirdseye(container, plan.birdseye);
-    activateLayout(container, getLayout(container));
+    activateLayout(container, layout);
     const result = transformer.transform(plan.birdseye ? plan.birdseyeMarkdown : plan.cleanMarkdown);
     const options = window.markmap.deriveOptions(result.frontmatter && result.frontmatter.markmap);
     let instance = container.markmapInstance;
+
+    if (instance && layout === 'vertical') {
+      if (instance.destroy) instance.destroy();
+      svg.innerHTML = '';
+      container.markmapInstance = null;
+      instance = null;
+    }
 
     if (!instance) {
       instance = window.markmap.Markmap.create(svg, options);
