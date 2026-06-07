@@ -1,12 +1,12 @@
-# Markmap WordPress
+# Markmap for WP
 
-Markmap WordPress is a standalone WordPress plugin that renders Markdown as interactive Markmap mindmaps, or generates a visual sitemap from published WordPress content.
+Markmap for WP is a standalone WordPress plugin that renders Markdown as interactive Markmap mindmaps, or generates a visual sitemap from published WordPress content.
 
 This project uses the upstream [Markmap](https://github.com/markmap/markmap) browser libraries, but the repository itself is intentionally shaped as a WordPress plugin rather than a fork of the full Markmap monorepo.
 
 ## Features
 
-- `[markmap_wordpress]` shortcode for pages, posts, and Elementor Shortcode widgets.
+- `[markmap_wp]` shortcode for pages, posts, and Elementor Shortcode widgets.
 - Markdown mode with an editor and `.md` file upload.
 - Read-only Markdown embeds using enclosing shortcode content.
 - Sitemap mode for generating a visual mindmap from published WordPress content.
@@ -19,19 +19,19 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 Copy this repository folder into WordPress:
 
 ```text
-wp-content/plugins/markmap-wordpress
+wp-content/plugins/markmap-wp
 ```
 
-Then activate **Markmap WordPress** in WordPress Admin > Plugins.
+Then activate **Markmap for WP** in WordPress Admin > Plugins.
 
-After activation, open **Settings > Markmap WordPress** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
+After activation, open **Settings > Markmap for WP** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
 
 ## Basic Usage
 
 Add the shortcode to any WordPress page or post:
 
 ```text
-[markmap_wordpress]
+[markmap_wp]
 ```
 
 This displays the interactive Markdown editor, file upload control, and mindmap canvas.
@@ -41,7 +41,7 @@ This displays the interactive Markdown editor, file upload control, and mindmap 
 Place Markdown between the opening and closing shortcode tags:
 
 ```text
-[markmap_wordpress mode="markdown" height="70vh"]
+[markmap_wp mode="markdown" height="70vh"]
 # Product Plan
 
 ## Discovery
@@ -51,7 +51,7 @@ Place Markdown between the opening and closing shortcode tags:
 ## Build
 - Prototype
 - Launch
-[/markmap_wordpress]
+[/markmap_wp]
 ```
 
 When Markdown is supplied this way, the plugin renders only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls at the bottom.
@@ -61,13 +61,13 @@ When Markdown is supplied this way, the plugin renders only the visual mindmap c
 Generate a mindmap from published WordPress content:
 
 ```text
-[markmap_wordpress mode="sitemap" height="70vh" types="page,post"]
+[markmap_wp mode="sitemap" height="70vh" types="page,post"]
 ```
 
 The `types` option accepts comma-separated public post types, such as:
 
 ```text
-[markmap_wordpress mode="sitemap" types="page,post,product"]
+[markmap_wp mode="sitemap" types="page,post,product"]
 ```
 
 ## Shortcode Options
@@ -80,11 +80,11 @@ The `types` option accepts comma-separated public post types, such as:
 
 ## Repository Structure
 
-- `markmap-wordpress.php`: main WordPress plugin file.
+- `markmap-wp.php`: main WordPress plugin file.
 - `assets/`: plugin CSS, JavaScript, and bundled browser builds.
 - `licenses/`: third-party license texts.
 - `readme.txt`: WordPress.org plugin readme.
-- `THIRD-PARTY-NOTICES.md`: bundled dependency notices and patch notes.
+- `licenses/THIRD-PARTY-NOTICES.txt`: bundled dependency notices and patch notes.
 - `LICENSE.txt`: GPLv2 license text for the WordPress plugin wrapper.
 
 ## WordPress.org Notes
@@ -93,7 +93,7 @@ The WordPress plugin wrapper is licensed as GPLv2 or later for WordPress.org com
 
 The plugin does not inject a public powered-by link. It also avoids loading executable browser code from public CDNs by bundling the required browser assets locally.
 
-Bundled third-party assets retain their original GPL-compatible notices in [`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md) and [`licenses/`](./licenses/).
+Bundled third-party assets retain their original GPL-compatible notices in [`licenses/THIRD-PARTY-NOTICES.txt`](./licenses/THIRD-PARTY-NOTICES.txt) and [`licenses/`](./licenses/).
 
 ## Upstream Credit
 
@@ -106,6 +106,6 @@ For general Markmap documentation, visit:
 
 ## License
 
-Markmap WordPress is licensed as GPLv2 or later.
+Markmap for WP is licensed as GPLv2 or later.
 
-Bundled Markmap packages are MIT licensed, and D3 is ISC licensed. See [`THIRD-PARTY-NOTICES.md`](./THIRD-PARTY-NOTICES.md) for details.
+Bundled Markmap packages are MIT licensed, and D3 is ISC licensed. See [`licenses/THIRD-PARTY-NOTICES.txt`](./licenses/THIRD-PARTY-NOTICES.txt) for details.

@@ -262,7 +262,7 @@
       item.loaded = deferred.promise;
       if (item.type === "script") {
         if (src && isRemoteAsset(src)) {
-          deferred.reject(new Error("Remote script loading is disabled in Markmap WordPress."));
+          deferred.reject(new Error("Remote script loading is disabled in this plugin."));
           await item.loaded;
           return;
         }
@@ -303,7 +303,7 @@
         deferred.resolve();
       } else if (url) {
         if (isRemoteAsset(url)) {
-          deferred.reject(new Error("Remote stylesheet loading is disabled in Markmap WordPress."));
+          deferred.reject(new Error("Remote stylesheet loading is disabled in this plugin."));
           await item.loaded;
           return;
         }

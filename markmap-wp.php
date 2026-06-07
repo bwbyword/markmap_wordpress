@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: Markmap WordPress
- * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from WordPress content.
+ * Plugin Name: Markmap for WP
+ * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
  * Version: 0.1.2
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: markmap-wordpress
+ * Text Domain: markmap-wp
  *
- * Markmap WordPress is free software: you can redistribute it and/or modify it
+ * Markmap for WP is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 2 of the License, or any later version.
  */
@@ -17,9 +17,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-final class Markmap_WordPress_Plugin {
+final class Markmap_WP_Plugin {
     private const VERSION = '0.1.2';
-    private const REST_NAMESPACE = 'markmap-wordpress/v1';
+    private const REST_NAMESPACE = 'markmap-wp/v1';
 
     public function __construct() {
         add_action('init', [$this, 'register_shortcodes']);
@@ -32,15 +32,15 @@ final class Markmap_WordPress_Plugin {
     }
 
     public function register_shortcodes(): void {
-        add_shortcode('markmap_wordpress', [$this, 'render_shortcode']);
+        add_shortcode('markmap_wp', [$this, 'render_shortcode']);
     }
 
     public function register_admin_page(): void {
         add_options_page(
-            __('Markmap WordPress', 'markmap-wordpress'),
-            __('Markmap WordPress', 'markmap-wordpress'),
+            __('Markmap for WP', 'markmap-wp'),
+            __('Markmap for WP', 'markmap-wp'),
             'manage_options',
-            'markmap-wordpress',
+            'markmap-wp',
             [$this, 'render_admin_page']
         );
     }
@@ -52,8 +52,8 @@ final class Markmap_WordPress_Plugin {
     public function add_plugin_action_links(array $links): array {
         $settings_link = sprintf(
             '<a href="%s">%s</a>',
-            esc_url(admin_url('options-general.php?page=markmap-wordpress')),
-            esc_html__('Usage', 'markmap-wordpress')
+            esc_url(admin_url('options-general.php?page=markmap-wp')),
+            esc_html__('Usage', 'markmap-wp')
         );
 
         array_unshift($links, $settings_link);
@@ -63,14 +63,14 @@ final class Markmap_WordPress_Plugin {
 
     public function register_assets(): void {
         wp_register_style(
-            'markmap-wordpress',
-            plugin_dir_url(__FILE__) . 'assets/markmap-wordpress.css',
+            'markmap-wp',
+            plugin_dir_url(__FILE__) . 'assets/markmap-wp.css',
             [],
             self::VERSION
         );
 
         wp_register_script(
-            'markmap-wordpress-d3',
+            'markmap-wp-d3',
             plugin_dir_url(__FILE__) . 'assets/vendor/d3.min.js',
             [],
             '7.9.0',
@@ -80,7 +80,7 @@ final class Markmap_WordPress_Plugin {
         wp_register_script(
             'markmap-view',
             plugin_dir_url(__FILE__) . 'assets/vendor/markmap-view.js',
-            ['markmap-wordpress-d3'],
+            ['markmap-wp-d3'],
             '0.18.12',
             true
         );
@@ -94,26 +94,26 @@ final class Markmap_WordPress_Plugin {
         );
 
         wp_register_script(
-            'markmap-wordpress',
-            plugin_dir_url(__FILE__) . 'assets/markmap-wordpress.js',
+            'markmap-wp',
+            plugin_dir_url(__FILE__) . 'assets/markmap-wp.js',
             ['markmap-lib'],
             self::VERSION,
             true
         );
 
-        wp_localize_script('markmap-wordpress', 'MarkmapWordPress', [
+        wp_localize_script('markmap-wp', 'MarkmapWP', [
             'restUrl' => esc_url_raw(rest_url(self::REST_NAMESPACE . '/sitemap')),
             'nonce' => wp_create_nonce('wp_rest'),
         ]);
     }
 
     public function enqueue_assets(): void {
-        if (!wp_script_is('markmap-wordpress', 'registered')) {
+        if (!wp_script_is('markmap-wp', 'registered')) {
             $this->register_assets();
         }
 
-        wp_enqueue_style('markmap-wordpress');
-        wp_enqueue_script('markmap-wordpress');
+        wp_enqueue_style('markmap-wp');
+        wp_enqueue_script('markmap-wp');
     }
 
     public function render_admin_page(): void {
@@ -123,18 +123,18 @@ final class Markmap_WordPress_Plugin {
 
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Markmap WordPress Usage', 'markmap-wordpress'); ?></h1>
+            <h1><?php esc_html_e('Markmap for WP Usage', 'markmap-wp'); ?></h1>
             <p>
-                <?php esc_html_e('Use the shortcode below to render Markdown mindmaps or visual sitemaps inside WordPress pages, posts, and Elementor Shortcode widgets.', 'markmap-wordpress'); ?>
+                <?php esc_html_e('Use the shortcode below to render Markdown mindmaps or visual sitemaps inside WordPress pages, posts, and Elementor Shortcode widgets.', 'markmap-wp'); ?>
             </p>
 
-            <h2><?php esc_html_e('Quick Start', 'markmap-wordpress'); ?></h2>
-            <p><?php esc_html_e('Add this shortcode to any page or post to show the interactive editor, upload control, and mindmap canvas.', 'markmap-wordpress'); ?></p>
-            <?php $this->render_code_example('[markmap_wordpress]'); ?>
+            <h2><?php esc_html_e('Quick Start', 'markmap-wp'); ?></h2>
+            <p><?php esc_html_e('Add this shortcode to any page or post to show the interactive editor, upload control, and mindmap canvas.', 'markmap-wp'); ?></p>
+            <?php $this->render_code_example('[markmap_wp]'); ?>
 
-            <h2><?php esc_html_e('Read-Only Markdown Embed', 'markmap-wordpress'); ?></h2>
-            <p><?php esc_html_e('Place Markdown between the opening and closing shortcode tags to show only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls.', 'markmap-wordpress'); ?></p>
-            <?php $this->render_code_example('[markmap_wordpress mode="markdown" height="70vh"]
+            <h2><?php esc_html_e('Read-Only Markdown Embed', 'markmap-wp'); ?></h2>
+            <p><?php esc_html_e('Place Markdown between the opening and closing shortcode tags to show only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls.', 'markmap-wp'); ?></p>
+            <?php $this->render_code_example('[markmap_wp mode="markdown" height="70vh"]
 # Product Plan
 
 ## Discovery
@@ -144,67 +144,67 @@ final class Markmap_WordPress_Plugin {
 ## Build
 - Prototype
 - Launch
-[/markmap_wordpress]'); ?>
+[/markmap_wp]'); ?>
 
-            <h2><?php esc_html_e('Visual Sitemap', 'markmap-wordpress'); ?></h2>
-            <p><?php esc_html_e('Use sitemap mode to generate a mindmap from published WordPress content. The types option accepts comma-separated public post types.', 'markmap-wordpress'); ?></p>
-            <?php $this->render_code_example('[markmap_wordpress mode="sitemap" height="70vh" types="page,post"]'); ?>
-            <?php $this->render_code_example('[markmap_wordpress mode="sitemap" types="page,post,product"]'); ?>
+            <h2><?php esc_html_e('Visual Sitemap', 'markmap-wp'); ?></h2>
+            <p><?php esc_html_e('Use sitemap mode to generate a mindmap from published WordPress content. The types option accepts comma-separated public post types.', 'markmap-wp'); ?></p>
+            <?php $this->render_code_example('[markmap_wp mode="sitemap" height="70vh" types="page,post"]'); ?>
+            <?php $this->render_code_example('[markmap_wp mode="sitemap" types="page,post,product"]'); ?>
 
-            <h2><?php esc_html_e('Shortcode Options', 'markmap-wordpress'); ?></h2>
+            <h2><?php esc_html_e('Shortcode Options', 'markmap-wp'); ?></h2>
             <table class="widefat striped" style="max-width: 900px;">
                 <thead>
                     <tr>
-                        <th><?php esc_html_e('Option', 'markmap-wordpress'); ?></th>
-                        <th><?php esc_html_e('Values', 'markmap-wordpress'); ?></th>
-                        <th><?php esc_html_e('Description', 'markmap-wordpress'); ?></th>
+                        <th><?php esc_html_e('Option', 'markmap-wp'); ?></th>
+                        <th><?php esc_html_e('Values', 'markmap-wp'); ?></th>
+                        <th><?php esc_html_e('Description', 'markmap-wp'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code>mode</code></td>
                         <td><code>markdown</code>, <code>sitemap</code></td>
-                        <td><?php esc_html_e('Chooses whether the plugin renders Markdown input or a generated WordPress sitemap.', 'markmap-wordpress'); ?></td>
+                        <td><?php esc_html_e('Chooses whether the plugin renders Markdown input or a generated WordPress sitemap.', 'markmap-wp'); ?></td>
                     </tr>
                     <tr>
                         <td><code>height</code></td>
                         <td><code>640px</code>, <code>70vh</code>, <code>100%</code></td>
-                        <td><?php esc_html_e('Sets the mindmap canvas height. The typo-compatible alias heigh is also accepted.', 'markmap-wordpress'); ?></td>
+                        <td><?php esc_html_e('Sets the mindmap canvas height. The typo-compatible alias heigh is also accepted.', 'markmap-wp'); ?></td>
                     </tr>
                     <tr>
                         <td><code>types</code></td>
                         <td><code>page,post</code></td>
-                        <td><?php esc_html_e('Controls which public post types are included in sitemap mode.', 'markmap-wordpress'); ?></td>
+                        <td><?php esc_html_e('Controls which public post types are included in sitemap mode.', 'markmap-wp'); ?></td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2><?php esc_html_e('Elementor', 'markmap-wordpress'); ?></h2>
+            <h2><?php esc_html_e('Elementor', 'markmap-wp'); ?></h2>
             <p>
-                <?php esc_html_e('Use the Shortcode widget and paste any Markmap WordPress shortcode. Elementor usually refreshes shortcode previews after you click Apply; after the preview updates, the mindmap should render inside the editor.', 'markmap-wordpress'); ?>
+                <?php esc_html_e('Use the Shortcode widget and paste any Markmap for WP shortcode. Elementor usually refreshes shortcode previews after you click Apply; after the preview updates, the mindmap should render inside the editor.', 'markmap-wp'); ?>
             </p>
 
-            <h2><?php esc_html_e('Troubleshooting', 'markmap-wordpress'); ?></h2>
+            <h2><?php esc_html_e('Troubleshooting', 'markmap-wp'); ?></h2>
             <ul style="list-style: disc; padding-left: 20px;">
-                <li><?php esc_html_e('If new controls do not work immediately, hard refresh the page or clear any WordPress/page-builder cache.', 'markmap-wordpress'); ?></li>
-                <li><?php esc_html_e('The visual renderer ships with local d3, markmap-view, and markmap-lib browser assets, so it does not load executable code from a public CDN.', 'markmap-wordpress'); ?></li>
-                <li><?php esc_html_e('For Elementor, click Apply in the Shortcode widget after changing the shortcode content.', 'markmap-wordpress'); ?></li>
+                <li><?php esc_html_e('If new controls do not work immediately, hard refresh the page or clear any WordPress/page-builder cache.', 'markmap-wp'); ?></li>
+                <li><?php esc_html_e('The visual renderer ships with local d3, markmap-view, and markmap-lib browser assets, so it does not load executable code from a public CDN.', 'markmap-wp'); ?></li>
+                <li><?php esc_html_e('For Elementor, click Apply in the Shortcode widget after changing the shortcode content.', 'markmap-wp'); ?></li>
             </ul>
 
-            <h2><?php esc_html_e('Standalone Plugin Notes', 'markmap-wordpress'); ?></h2>
+            <h2><?php esc_html_e('Standalone Plugin Notes', 'markmap-wp'); ?></h2>
             <ul style="list-style: disc; padding-left: 20px;">
-                <li><?php esc_html_e('The WordPress plugin wrapper is licensed as GPLv2 or later for WordPress.org compatibility.', 'markmap-wordpress'); ?></li>
-                <li><?php esc_html_e('D3 and Markmap browser assets are bundled locally. Public pages do not need to load executable code from public CDNs.', 'markmap-wordpress'); ?></li>
-                <li><?php esc_html_e('Third-party credits and license notices are included in THIRD-PARTY-NOTICES.md and the licenses directory.', 'markmap-wordpress'); ?></li>
-                <li><?php esc_html_e('The plugin does not add a public powered-by link. Upstream documentation links are shown only on this admin usage page.', 'markmap-wordpress'); ?></li>
+                <li><?php esc_html_e('The WordPress plugin wrapper is licensed as GPLv2 or later for WordPress.org compatibility.', 'markmap-wp'); ?></li>
+                <li><?php esc_html_e('D3 and Markmap browser assets are bundled locally. Public pages do not need to load executable code from public CDNs.', 'markmap-wp'); ?></li>
+                <li><?php esc_html_e('Third-party credits and license notices are included in licenses/THIRD-PARTY-NOTICES.txt and the licenses directory.', 'markmap-wp'); ?></li>
+                <li><?php esc_html_e('The plugin does not add a public powered-by link. Upstream documentation links are shown only on this admin usage page.', 'markmap-wp'); ?></li>
             </ul>
 
-            <h2><?php esc_html_e('Upstream Markmap', 'markmap-wordpress'); ?></h2>
+            <h2><?php esc_html_e('Upstream Markmap', 'markmap-wp'); ?></h2>
             <p>
-                <?php esc_html_e('The core Markdown-to-mindmap engine comes from the upstream Markmap project.', 'markmap-wordpress'); ?>
-                <a href="https://markmap.js.org/docs" target="_blank" rel="noreferrer noopener"><?php esc_html_e('Read the Markmap docs', 'markmap-wordpress'); ?></a>
-                <?php esc_html_e('or', 'markmap-wordpress'); ?>
-                <a href="https://markmap.js.org/repl" target="_blank" rel="noreferrer noopener"><?php esc_html_e('try the Markmap playground', 'markmap-wordpress'); ?></a>.
+                <?php esc_html_e('The core Markdown-to-mindmap engine comes from the upstream Markmap project.', 'markmap-wp'); ?>
+                <a href="https://markmap.js.org/docs" target="_blank" rel="noreferrer noopener"><?php esc_html_e('Read the Markmap docs', 'markmap-wp'); ?></a>
+                <?php esc_html_e('or', 'markmap-wp'); ?>
+                <a href="https://markmap.js.org/repl" target="_blank" rel="noreferrer noopener"><?php esc_html_e('try the Markmap playground', 'markmap-wp'); ?></a>.
             </p>
         </div>
         <?php
@@ -234,7 +234,7 @@ final class Markmap_WordPress_Plugin {
                 'types' => 'page,post',
             ],
             $atts,
-            'markmap_wordpress'
+            'markmap_wp'
         );
 
         $mode = in_array($atts['mode'], ['markdown', 'sitemap'], true) ? $atts['mode'] : 'markdown';
@@ -246,43 +246,43 @@ final class Markmap_WordPress_Plugin {
 
         $this->enqueue_assets();
 
-        $instance_id = wp_unique_id('markmap-wordpress-');
+        $instance_id = wp_unique_id('markmap-wp-');
 
         ob_start();
         ?>
         <div
             id="<?php echo esc_attr($instance_id); ?>"
-            class="markmap-wordpress<?php echo $is_view_only ? ' markmap-wordpress--view-only' : ''; ?>"
+            class="markmap-wp<?php echo $is_view_only ? ' markmap-wp--view-only' : ''; ?>"
             data-mode="<?php echo esc_attr($mode); ?>"
             data-types="<?php echo esc_attr($types); ?>"
-            style="--markmap-wordpress-height: <?php echo esc_attr($height); ?>;"
+            style="--markmap-wp-height: <?php echo esc_attr($height); ?>;"
         >
             <?php if ($is_view_only) : ?>
-                <script type="application/json" class="markmap-wordpress__source"><?php echo wp_json_encode($markdown_content, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
+                <script type="application/json" class="markmap-wp__source"><?php echo wp_json_encode($markdown_content, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?></script>
             <?php endif; ?>
             <?php if (!$is_view_only) : ?>
-            <div class="markmap-wordpress__toolbar" role="group" aria-label="<?php esc_attr_e('Mindmap source', 'markmap-wordpress'); ?>">
-                <button class="markmap-wordpress__mode is-active" type="button" data-mode="markdown">
-                    <?php esc_html_e('Markdown', 'markmap-wordpress'); ?>
+            <div class="markmap-wp__toolbar" role="group" aria-label="<?php esc_attr_e('Mindmap source', 'markmap-wp'); ?>">
+                <button class="markmap-wp__mode is-active" type="button" data-mode="markdown">
+                    <?php esc_html_e('Markdown', 'markmap-wp'); ?>
                 </button>
-                <button class="markmap-wordpress__mode" type="button" data-mode="sitemap">
-                    <?php esc_html_e('Sitemap', 'markmap-wordpress'); ?>
+                <button class="markmap-wp__mode" type="button" data-mode="sitemap">
+                    <?php esc_html_e('Sitemap', 'markmap-wp'); ?>
                 </button>
-                <label class="markmap-wordpress__file">
-                    <span><?php esc_html_e('Open .md', 'markmap-wordpress'); ?></span>
+                <label class="markmap-wp__file">
+                    <span><?php esc_html_e('Open .md', 'markmap-wp'); ?></span>
                     <input type="file" accept=".md,.markdown,text/markdown,text/plain">
                 </label>
-                <button class="markmap-wordpress__fit" type="button">
-                    <?php esc_html_e('Fit', 'markmap-wordpress'); ?>
+                <button class="markmap-wp__fit" type="button">
+                    <?php esc_html_e('Fit', 'markmap-wp'); ?>
                 </button>
-                <button class="markmap-wordpress__zoom-out" type="button">
-                    <?php esc_html_e('Zoom out', 'markmap-wordpress'); ?>
+                <button class="markmap-wp__zoom-out" type="button">
+                    <?php esc_html_e('Zoom out', 'markmap-wp'); ?>
                 </button>
-                <button class="markmap-wordpress__zoom-in" type="button">
-                    <?php esc_html_e('Zoom in', 'markmap-wordpress'); ?>
+                <button class="markmap-wp__zoom-in" type="button">
+                    <?php esc_html_e('Zoom in', 'markmap-wp'); ?>
                 </button>
             </div>
-            <div class="markmap-wordpress__editor" data-panel="markdown">
+            <div class="markmap-wp__editor" data-panel="markdown">
                 <textarea spellcheck="false"># Mindmap
 
 ## Paste Markdown
@@ -294,16 +294,16 @@ final class Markmap_WordPress_Plugin {
 - The mindmap updates instantly</textarea>
             </div>
             <?php endif; ?>
-            <div class="markmap-wordpress__status" aria-live="polite"></div>
-            <svg class="markmap-wordpress__svg" role="img" aria-label="<?php esc_attr_e('Interactive mindmap', 'markmap-wordpress'); ?>"></svg>
+            <div class="markmap-wp__status" aria-live="polite"></div>
+            <svg class="markmap-wp__svg" role="img" aria-label="<?php esc_attr_e('Interactive mindmap', 'markmap-wp'); ?>"></svg>
             <?php if ($is_view_only) : ?>
-                <div class="markmap-wordpress__canvas-controls" role="group" aria-label="<?php esc_attr_e('Mindmap controls', 'markmap-wordpress'); ?>">
-                    <button class="markmap-wordpress__icon-button markmap-wordpress__zoom-out" type="button" aria-label="<?php esc_attr_e('Zoom out', 'markmap-wordpress'); ?>">
+                <div class="markmap-wp__canvas-controls" role="group" aria-label="<?php esc_attr_e('Mindmap controls', 'markmap-wp'); ?>">
+                    <button class="markmap-wp__icon-button markmap-wp__zoom-out" type="button" aria-label="<?php esc_attr_e('Zoom out', 'markmap-wp'); ?>">
                         <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
                             <path d="M5 12h14"></path>
                         </svg>
                     </button>
-                    <button class="markmap-wordpress__icon-button markmap-wordpress__fit" type="button" aria-label="<?php esc_attr_e('Fit mindmap', 'markmap-wordpress'); ?>">
+                    <button class="markmap-wp__icon-button markmap-wp__fit" type="button" aria-label="<?php esc_attr_e('Fit mindmap', 'markmap-wp'); ?>">
                         <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
                             <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
                             <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
@@ -312,13 +312,13 @@ final class Markmap_WordPress_Plugin {
                             <path d="M9 9h6v6H9z"></path>
                         </svg>
                     </button>
-                    <button class="markmap-wordpress__icon-button markmap-wordpress__zoom-in" type="button" aria-label="<?php esc_attr_e('Zoom in', 'markmap-wordpress'); ?>">
+                    <button class="markmap-wp__icon-button markmap-wp__zoom-in" type="button" aria-label="<?php esc_attr_e('Zoom in', 'markmap-wp'); ?>">
                         <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
                             <path d="M12 5v14"></path>
                             <path d="M5 12h14"></path>
                         </svg>
                     </button>
-                    <button class="markmap-wordpress__icon-button markmap-wordpress__fullscreen" type="button" aria-label="<?php esc_attr_e('Toggle fullscreen', 'markmap-wordpress'); ?>">
+                    <button class="markmap-wp__icon-button markmap-wp__fullscreen" type="button" aria-label="<?php esc_attr_e('Toggle fullscreen', 'markmap-wp'); ?>">
                         <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
                             <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
                             <path d="M16 3h3a2 2 0 0 1 2 2v3"></path>
@@ -447,4 +447,4 @@ final class Markmap_WordPress_Plugin {
     }
 }
 
-new Markmap_WordPress_Plugin();
+new Markmap_WP_Plugin();

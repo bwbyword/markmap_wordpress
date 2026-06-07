@@ -5,7 +5,7 @@
     local: (path) => path
   };
   async function checkUrl(url, signal) {
-    throw new Error("Remote provider checks are disabled in Markmap WordPress.");
+    throw new Error("Remote provider checks are disabled in this plugin.");
   }
   class UrlBuilder {
     constructor() {

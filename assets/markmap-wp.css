@@ -1,11 +1,11 @@
-.markmap-wordpress {
-  --markmap-wordpress-border: #d7dee8;
-  --markmap-wordpress-bg: #ffffff;
-  --markmap-wordpress-muted: #586579;
-  --markmap-wordpress-accent: #146c5f;
-  --markmap-wordpress-panel: #f6f8fb;
-  background: var(--markmap-wordpress-bg);
-  border: 1px solid var(--markmap-wordpress-border);
+.markmap-wp {
+  --markmap-wp-border: #d7dee8;
+  --markmap-wp-bg: #ffffff;
+  --markmap-wp-muted: #586579;
+  --markmap-wp-accent: #146c5f;
+  --markmap-wp-panel: #f6f8fb;
+  background: var(--markmap-wp-bg);
+  border: 1px solid var(--markmap-wp-border);
   border-radius: 8px;
   color: #18202c;
   display: grid;
@@ -14,21 +14,21 @@
   position: relative;
 }
 
-.markmap-wordpress__toolbar {
+.markmap-wp__toolbar {
   align-items: center;
-  background: var(--markmap-wordpress-panel);
-  border-bottom: 1px solid var(--markmap-wordpress-border);
+  background: var(--markmap-wp-panel);
+  border-bottom: 1px solid var(--markmap-wp-border);
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px;
 }
 
-.markmap-wordpress button,
-.markmap-wordpress__file {
+.markmap-wp button,
+.markmap-wp__file {
   align-items: center;
   background: #ffffff;
-  border: 1px solid var(--markmap-wordpress-border);
+  border: 1px solid var(--markmap-wp-border);
   border-radius: 6px;
   color: #18202c;
   cursor: pointer;
@@ -41,18 +41,18 @@
   padding: 8px 12px;
 }
 
-.markmap-wordpress button:hover,
-.markmap-wordpress__file:hover {
-  border-color: var(--markmap-wordpress-accent);
+.markmap-wp button:hover,
+.markmap-wp__file:hover {
+  border-color: var(--markmap-wp-accent);
 }
 
-.markmap-wordpress__mode.is-active {
-  background: var(--markmap-wordpress-accent);
-  border-color: var(--markmap-wordpress-accent);
+.markmap-wp__mode.is-active {
+  background: var(--markmap-wp-accent);
+  border-color: var(--markmap-wp-accent);
   color: #ffffff;
 }
 
-.markmap-wordpress__file input {
+.markmap-wp__file input {
   height: 1px;
   opacity: 0;
   overflow: hidden;
@@ -60,16 +60,16 @@
   width: 1px;
 }
 
-.markmap-wordpress__editor {
-  border-bottom: 1px solid var(--markmap-wordpress-border);
+.markmap-wp__editor {
+  border-bottom: 1px solid var(--markmap-wp-border);
 }
 
-.markmap-wordpress[data-mode="sitemap"] .markmap-wordpress__editor,
-.markmap-wordpress[data-mode="sitemap"] .markmap-wordpress__file {
+.markmap-wp[data-mode="sitemap"] .markmap-wp__editor,
+.markmap-wp[data-mode="sitemap"] .markmap-wp__file {
   display: none;
 }
 
-.markmap-wordpress textarea {
+.markmap-wp textarea {
   background: #fbfcfe;
   border: 0;
   box-sizing: border-box;
@@ -84,46 +84,46 @@
   width: 100%;
 }
 
-.markmap-wordpress textarea:focus {
-  outline: 2px solid color-mix(in srgb, var(--markmap-wordpress-accent) 70%, white);
+.markmap-wp textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--markmap-wp-accent) 70%, white);
   outline-offset: -2px;
 }
 
-.markmap-wordpress__status {
-  color: var(--markmap-wordpress-muted);
+.markmap-wp__status {
+  color: var(--markmap-wp-muted);
   font-size: 13px;
   min-height: 20px;
   padding: 8px 12px 0;
 }
 
-.markmap-wordpress__status:empty {
+.markmap-wp__status:empty {
   display: none;
 }
 
-.markmap-wordpress__status.is-error {
+.markmap-wp__status.is-error {
   color: #a33030;
 }
 
-.markmap-wordpress__svg {
+.markmap-wp__svg {
   display: block;
-  height: var(--markmap-wordpress-height);
+  height: var(--markmap-wp-height);
   min-height: 320px;
   width: 100%;
 }
 
-.markmap-wordpress--view-only {
+.markmap-wp--view-only {
   background: transparent;
   border: 0;
   border-radius: 0;
   overflow: visible;
 }
 
-.markmap-wordpress--view-only .markmap-wordpress__svg {
+.markmap-wp--view-only .markmap-wp__svg {
   background: transparent;
   min-height: 0;
 }
 
-.markmap-wordpress--view-only .markmap-wordpress__status {
+.markmap-wp--view-only .markmap-wp__status {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(163, 48, 48, 0.22);
   border-radius: 6px;
@@ -136,7 +136,7 @@
   z-index: 2;
 }
 
-.markmap-wordpress__canvas-controls {
+.markmap-wp__canvas-controls {
   align-items: center;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(88, 101, 121, 0.16);
@@ -153,12 +153,12 @@
   z-index: 2;
 }
 
-.markmap-wordpress__canvas-controls:hover {
+.markmap-wp__canvas-controls:hover {
   background: rgba(255, 255, 255, 0.94);
   border-color: rgba(88, 101, 121, 0.3);
 }
 
-.markmap-wordpress button.markmap-wordpress__icon-button {
+.markmap-wp button.markmap-wp__icon-button {
   background: transparent;
   border: 0;
   border-radius: 999px;
@@ -169,13 +169,13 @@
   width: 34px;
 }
 
-.markmap-wordpress button.markmap-wordpress__icon-button:hover,
-.markmap-wordpress button.markmap-wordpress__icon-button:focus-visible {
+.markmap-wp button.markmap-wp__icon-button:hover,
+.markmap-wp button.markmap-wp__icon-button:focus-visible {
   background: rgba(20, 108, 95, 0.1);
-  color: var(--markmap-wordpress-accent);
+  color: var(--markmap-wp-accent);
 }
 
-.markmap-wordpress__icon-button svg {
+.markmap-wp__icon-button svg {
   fill: none;
   height: 18px;
   stroke: currentColor;
@@ -185,25 +185,25 @@
   width: 18px;
 }
 
-.markmap-wordpress--view-only:fullscreen {
+.markmap-wp--view-only:fullscreen {
   background: #ffffff;
   display: grid;
   height: 100vh;
   width: 100vw;
 }
 
-.markmap-wordpress--view-only:fullscreen .markmap-wordpress__svg {
+.markmap-wp--view-only:fullscreen .markmap-wp__svg {
   height: 100vh;
   min-height: 100vh;
 }
 
 @media (max-width: 640px) {
-  .markmap-wordpress__toolbar {
+  .markmap-wp__toolbar {
     align-items: stretch;
   }
 
-  .markmap-wordpress button,
-  .markmap-wordpress__file {
+  .markmap-wp button,
+  .markmap-wp__file {
     flex: 1 1 auto;
   }
 }
