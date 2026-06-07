@@ -579,6 +579,17 @@
       element.querySelectorAll('foreignObject, text, line, circle').forEach((child) => {
         child.style.opacity = '1';
       });
+      element.querySelectorAll('foreignObject').forEach((foreignObject) => {
+        const paddingX = instance.options && typeof instance.options.paddingX === 'number' ? instance.options.paddingX : 8;
+        foreignObject.setAttribute('width', String(Math.max(0, node.state.rect.width - paddingX * 2)));
+        foreignObject.setAttribute('height', String(node.state.rect.height));
+      });
+      element.querySelectorAll('line').forEach((line) => {
+        line.setAttribute('x1', '-1');
+        line.setAttribute('x2', String(node.state.rect.width + 2));
+        line.setAttribute('y1', String(node.state.rect.height));
+        line.setAttribute('y2', String(node.state.rect.height));
+      });
       element.setAttribute('transform', `translate(${node.state.rect.x},${node.state.rect.y})`);
     });
 
