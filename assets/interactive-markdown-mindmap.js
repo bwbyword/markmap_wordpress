@@ -139,11 +139,45 @@
     return keys.length ? stack[keys[0]] : stack[Object.keys(stack).map(Number).sort((a, b) => a - b)[0]];
   }
 
+  function formatBrickLine(indent, brick) {
+    return `${' '.repeat(indent)}- ${brick.type.toUpperCase()} - ${brick.name}`;
+  }
+
+  function buildBirdseyeMarkdown(cleanLines, bricksByLabel) {
+    const output = [];
+
+    cleanLines.forEach((line) => {
+      output.push(line);
+
+      const heading = line.match(/^(\s{0,3})(#{1,6})\s+(.+)$/);
+      if (heading) {
+        const label = stripMarkdown(heading[3]);
+        const brickGroup = bricksByLabel.get(normalizeLabel(label));
+        const childIndent = heading[2].length * 2;
+        const bricks = brickGroup && brickGroup.bricks.length ? brickGroup.bricks : [{ name: 'No bricks yet', type: 'todo' }];
+
+        bricks.forEach((brick) => output.push(formatBrickLine(childIndent, brick)));
+        return;
+      }
+
+      const list = line.match(/^(\s*)([-*+])\s+(.+)$/);
+      if (list) {
+        const label = stripMarkdown(list[3]);
+        const brickGroup = bricksByLabel.get(normalizeLabel(label));
+        const childIndent = list[1].replace(/\t/g, '  ').length + 2;
+        const bricks = brickGroup && brickGroup.bricks.length ? brickGroup.bricks : [{ name: 'No bricks yet', type: 'todo' }];
+
+        bricks.forEach((brick) => output.push(formatBrickLine(childIndent, brick)));
+      }
+    });
+
+    return output.join('\n');
+  }
+
   function parseContentPlan(markdown, container) {
     const lines = (markdown || DEFAULT_MARKDOWN).split(/\n/);
     const stack = {};
     const cleanLines = [];
-    const birdseyeLines = [];
     const bricksByLabel = new Map();
     let lastContentLabel = '';
     let rootLabel = '';
@@ -165,14 +199,12 @@
         Object.keys(stack).map(Number).filter((key) => key > indent).forEach((key) => delete stack[key]);
         if (!rootLabel) rootLabel = label;
         cleanLines.push(line);
-        birdseyeLines.push(line);
         return;
       }
 
       const list = line.match(/^(\s*)([-*+])\s+(.+)$/);
       if (!list) {
         cleanLines.push(line);
-        birdseyeLines.push(line);
         return;
       }
 
@@ -186,7 +218,6 @@
         Object.keys(stack).map(Number).filter((key) => key > indent).forEach((key) => delete stack[key]);
         if (!rootLabel) rootLabel = label;
         cleanLines.push(line);
-        birdseyeLines.push(line);
         return;
       }
 
@@ -199,17 +230,19 @@
 
       existing.bricks.push(brick);
       bricksByLabel.set(key, existing);
-      birdseyeLines.push(`${list[1]}${list[2]} ${brick.type.toUpperCase()} - ${brick.name}`);
     });
 
     const planning = ['mainpage-first', 'structure-first'].includes(directivePlanning) ? directivePlanning : getPlanningMode(container);
     const birdseye = directiveBirdseye === null ? isBirdseye(container) : directiveBirdseye;
+    const hasBricks = [...bricksByLabel.values()].some((group) => group.bricks.length > 0);
+    const cleanMarkdown = cleanLines.join('\n');
 
     return {
       birdseye,
-      birdseyeMarkdown: birdseyeLines.join('\n'),
+      birdseyeMarkdown: hasBricks ? buildBirdseyeMarkdown(cleanLines, bricksByLabel) : cleanMarkdown,
       bricksByLabel,
-      cleanMarkdown: cleanLines.join('\n'),
+      cleanMarkdown,
+      hasBricks,
       planning,
       rootLabel,
     };
@@ -258,6 +291,10 @@
         appendDecoration(text, `${brickGroup.bricks.length} bricks`, 'interactive-markdown-mindmap__badge');
       }
 
+      if (plan.birdseye && !plan.hasBricks && label) {
+        appendDecoration(text, 'No bricks yet', 'interactive-markdown-mindmap__badge');
+      }
+
       if (plan.planning === 'mainpage-first' && (label === rootKey || (!rootKey && index === 0))) {
         const node = text.closest('g');
         if (node) node.classList.add('interactive-markdown-mindmap__mainpage-node');
@@ -272,7 +309,11 @@
         ? 'Mainpage First: root content bricks are defined. Continue branching when ready.'
         : 'Mainpage First: define content bricks for the root page before branching out.');
     } else {
-      setStatus(container, plan.birdseye ? 'Bird\'s Eye View: all content bricks are visible.' : '');
+      setStatus(container, plan.birdseye
+        ? (plan.hasBricks
+          ? 'Bird\'s Eye View: showing every node with its content-brick list or a No bricks yet placeholder.'
+          : 'Bird\'s Eye View: no content bricks were found, so every node is marked No bricks yet.')
+        : '');
     }
   }
 
