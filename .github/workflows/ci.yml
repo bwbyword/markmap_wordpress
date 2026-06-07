@@ -23,18 +23,18 @@ jobs:
           coverage: none
 
       - name: Lint PHP
-        run: php -l markmap-wp.php
+        run: php -l markmap-mindmap.php
 
       - name: Check JavaScript syntax
         run: |
-          node --check assets/markmap-wp.js
+          node --check assets/markmap-mindmap.js
           node --check assets/vendor/d3.min.js
           node --check assets/vendor/markmap-lib.iife.js
           node --check assets/vendor/markmap-view.js
 
       - name: Check bundled executable assets
         run: |
-          if grep -R -n -E 'cdn\.jsdelivr|unpkg\.com|esm\.sh|https://cdn|http://cdn' markmap-wp.php assets; then
+          if grep -R -n -E 'cdn\.jsdelivr|unpkg\.com|esm\.sh|https://cdn|http://cdn' markmap-mindmap.php assets; then
             echo "Unexpected public CDN reference found in executable plugin files."
             exit 1
           fi

@@ -1,11 +1,11 @@
-.markmap-wp {
-  --markmap-wp-border: #d7dee8;
-  --markmap-wp-bg: #ffffff;
-  --markmap-wp-muted: #586579;
-  --markmap-wp-accent: #146c5f;
-  --markmap-wp-panel: #f6f8fb;
-  background: var(--markmap-wp-bg);
-  border: 1px solid var(--markmap-wp-border);
+.markmap-mindmap {
+  --markmap-mindmap-border: #d7dee8;
+  --markmap-mindmap-bg: #ffffff;
+  --markmap-mindmap-muted: #586579;
+  --markmap-mindmap-accent: #146c5f;
+  --markmap-mindmap-panel: #f6f8fb;
+  background: var(--markmap-mindmap-bg);
+  border: 1px solid var(--markmap-mindmap-border);
   border-radius: 8px;
   color: #18202c;
   display: grid;
@@ -14,21 +14,21 @@
   position: relative;
 }
 
-.markmap-wp__toolbar {
+.markmap-mindmap__toolbar {
   align-items: center;
-  background: var(--markmap-wp-panel);
-  border-bottom: 1px solid var(--markmap-wp-border);
+  background: var(--markmap-mindmap-panel);
+  border-bottom: 1px solid var(--markmap-mindmap-border);
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px;
 }
 
-.markmap-wp button,
-.markmap-wp__file {
+.markmap-mindmap button,
+.markmap-mindmap__file {
   align-items: center;
   background: #ffffff;
-  border: 1px solid var(--markmap-wp-border);
+  border: 1px solid var(--markmap-mindmap-border);
   border-radius: 6px;
   color: #18202c;
   cursor: pointer;
@@ -41,18 +41,18 @@
   padding: 8px 12px;
 }
 
-.markmap-wp button:hover,
-.markmap-wp__file:hover {
-  border-color: var(--markmap-wp-accent);
+.markmap-mindmap button:hover,
+.markmap-mindmap__file:hover {
+  border-color: var(--markmap-mindmap-accent);
 }
 
-.markmap-wp__mode.is-active {
-  background: var(--markmap-wp-accent);
-  border-color: var(--markmap-wp-accent);
+.markmap-mindmap__mode.is-active {
+  background: var(--markmap-mindmap-accent);
+  border-color: var(--markmap-mindmap-accent);
   color: #ffffff;
 }
 
-.markmap-wp__file input {
+.markmap-mindmap__file input {
   height: 1px;
   opacity: 0;
   overflow: hidden;
@@ -60,16 +60,16 @@
   width: 1px;
 }
 
-.markmap-wp__editor {
-  border-bottom: 1px solid var(--markmap-wp-border);
+.markmap-mindmap__editor {
+  border-bottom: 1px solid var(--markmap-mindmap-border);
 }
 
-.markmap-wp[data-mode="sitemap"] .markmap-wp__editor,
-.markmap-wp[data-mode="sitemap"] .markmap-wp__file {
+.markmap-mindmap[data-mode="sitemap"] .markmap-mindmap__editor,
+.markmap-mindmap[data-mode="sitemap"] .markmap-mindmap__file {
   display: none;
 }
 
-.markmap-wp textarea {
+.markmap-mindmap textarea {
   background: #fbfcfe;
   border: 0;
   box-sizing: border-box;
@@ -84,46 +84,46 @@
   width: 100%;
 }
 
-.markmap-wp textarea:focus {
-  outline: 2px solid color-mix(in srgb, var(--markmap-wp-accent) 70%, white);
+.markmap-mindmap textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--markmap-mindmap-accent) 70%, white);
   outline-offset: -2px;
 }
 
-.markmap-wp__status {
-  color: var(--markmap-wp-muted);
+.markmap-mindmap__status {
+  color: var(--markmap-mindmap-muted);
   font-size: 13px;
   min-height: 20px;
   padding: 8px 12px 0;
 }
 
-.markmap-wp__status:empty {
+.markmap-mindmap__status:empty {
   display: none;
 }
 
-.markmap-wp__status.is-error {
+.markmap-mindmap__status.is-error {
   color: #a33030;
 }
 
-.markmap-wp__svg {
+.markmap-mindmap__svg {
   display: block;
-  height: var(--markmap-wp-height);
+  height: var(--markmap-mindmap-height);
   min-height: 320px;
   width: 100%;
 }
 
-.markmap-wp--view-only {
+.markmap-mindmap--view-only {
   background: transparent;
   border: 0;
   border-radius: 0;
   overflow: visible;
 }
 
-.markmap-wp--view-only .markmap-wp__svg {
+.markmap-mindmap--view-only .markmap-mindmap__svg {
   background: transparent;
   min-height: 0;
 }
 
-.markmap-wp--view-only .markmap-wp__status {
+.markmap-mindmap--view-only .markmap-mindmap__status {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(163, 48, 48, 0.22);
   border-radius: 6px;
@@ -136,7 +136,7 @@
   z-index: 2;
 }
 
-.markmap-wp__canvas-controls {
+.markmap-mindmap__canvas-controls {
   align-items: center;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(88, 101, 121, 0.16);
@@ -153,12 +153,12 @@
   z-index: 2;
 }
 
-.markmap-wp__canvas-controls:hover {
+.markmap-mindmap__canvas-controls:hover {
   background: rgba(255, 255, 255, 0.94);
   border-color: rgba(88, 101, 121, 0.3);
 }
 
-.markmap-wp button.markmap-wp__icon-button {
+.markmap-mindmap button.markmap-mindmap__icon-button {
   background: transparent;
   border: 0;
   border-radius: 999px;
@@ -169,13 +169,13 @@
   width: 34px;
 }
 
-.markmap-wp button.markmap-wp__icon-button:hover,
-.markmap-wp button.markmap-wp__icon-button:focus-visible {
+.markmap-mindmap button.markmap-mindmap__icon-button:hover,
+.markmap-mindmap button.markmap-mindmap__icon-button:focus-visible {
   background: rgba(20, 108, 95, 0.1);
-  color: var(--markmap-wp-accent);
+  color: var(--markmap-mindmap-accent);
 }
 
-.markmap-wp__icon-button svg {
+.markmap-mindmap__icon-button svg {
   fill: none;
   height: 18px;
   stroke: currentColor;
@@ -185,25 +185,25 @@
   width: 18px;
 }
 
-.markmap-wp--view-only:fullscreen {
+.markmap-mindmap--view-only:fullscreen {
   background: #ffffff;
   display: grid;
   height: 100vh;
   width: 100vw;
 }
 
-.markmap-wp--view-only:fullscreen .markmap-wp__svg {
+.markmap-mindmap--view-only:fullscreen .markmap-mindmap__svg {
   height: 100vh;
   min-height: 100vh;
 }
 
 @media (max-width: 640px) {
-  .markmap-wp__toolbar {
+  .markmap-mindmap__toolbar {
     align-items: stretch;
   }
 
-  .markmap-wp button,
-  .markmap-wp__file {
+  .markmap-mindmap button,
+  .markmap-mindmap__file {
     flex: 1 1 auto;
   }
 }

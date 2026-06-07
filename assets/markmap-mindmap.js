@@ -11,7 +11,7 @@
   }
 
   function setStatus(container, message, isError) {
-    const status = container.querySelector('.markmap-wp__status');
+    const status = container.querySelector('.markmap-mindmap__status');
 
     if (!status) return;
 
@@ -33,13 +33,13 @@
 
   function activateMode(container, mode) {
     container.setAttribute('data-mode', mode);
-    container.querySelectorAll('.markmap-wp__mode').forEach((button) => {
+    container.querySelectorAll('.markmap-mindmap__mode').forEach((button) => {
       button.classList.toggle('is-active', button.getAttribute('data-mode') === mode);
     });
   }
 
   function getEmbeddedMarkdown(container) {
-    const source = container.querySelector('.markmap-wp__source');
+    const source = container.querySelector('.markmap-mindmap__source');
 
     if (!source) return '';
 
@@ -51,7 +51,7 @@
   }
 
   function renderMarkdown(container, markdown, shouldFit) {
-    const svg = container.querySelector('.markmap-wp__svg');
+    const svg = container.querySelector('.markmap-mindmap__svg');
     const transformer = getTransformer();
     const result = transformer.transform(markdown || DEFAULT_MARKDOWN);
     const options = window.markmap.deriveOptions(result.frontmatter && result.frontmatter.markmap);
@@ -88,12 +88,12 @@
 
   async function renderSitemap(container) {
     setStatus(container, 'Generating sitemap...');
-    const url = new URL(window.MarkmapWP.restUrl);
+    const url = new URL(window.MarkmapMindmap.restUrl);
     url.searchParams.set('types', getTypes(container));
 
     const response = await fetch(url.toString(), {
       headers: {
-        'X-WP-Nonce': window.MarkmapWP.nonce,
+        'X-WP-Nonce': window.MarkmapMindmap.nonce,
       },
     });
 
@@ -118,7 +118,7 @@
 
     activateMode(container, configuredMode);
 
-    container.querySelectorAll('.markmap-wp__mode').forEach((button) => {
+    container.querySelectorAll('.markmap-mindmap__mode').forEach((button) => {
       button.addEventListener('click', async () => {
         const mode = button.getAttribute('data-mode');
         activateMode(container, mode);
@@ -162,7 +162,7 @@
       });
     }
 
-    container.querySelectorAll('.markmap-wp__fit').forEach((button) => {
+    container.querySelectorAll('.markmap-mindmap__fit').forEach((button) => {
       button.addEventListener('click', () => {
         if (container.markmapInstance) {
           container.markmapInstance.fit();
@@ -170,7 +170,7 @@
       });
     });
 
-    container.querySelectorAll('.markmap-wp__zoom-out').forEach((button) => {
+    container.querySelectorAll('.markmap-mindmap__zoom-out').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
         zoomMindmap(container, 1 / 1.2).catch((error) => {
@@ -179,7 +179,7 @@
       });
     });
 
-    container.querySelectorAll('.markmap-wp__zoom-in').forEach((button) => {
+    container.querySelectorAll('.markmap-mindmap__zoom-in').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
         zoomMindmap(container, 1.2).catch((error) => {
@@ -188,7 +188,7 @@
       });
     });
 
-    container.querySelectorAll('.markmap-wp__fullscreen').forEach((button) => {
+    container.querySelectorAll('.markmap-mindmap__fullscreen').forEach((button) => {
       button.addEventListener('click', async () => {
         try {
           if (document.fullscreenElement === container) {
@@ -224,12 +224,12 @@
     const scope = root || document;
     const containers = [];
 
-    if (scope.matches && scope.matches('.markmap-wp')) {
+    if (scope.matches && scope.matches('.markmap-mindmap')) {
       containers.push(scope);
     }
 
     if (scope.querySelectorAll) {
-      containers.push(...scope.querySelectorAll('.markmap-wp'));
+      containers.push(...scope.querySelectorAll('.markmap-mindmap'));
     }
 
     containers.forEach(initialize);
