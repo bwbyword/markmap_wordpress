@@ -1,0 +1,184 @@
+(function () {
+  const DEFAULT_MARKDOWN = '# Mindmap\n\n## Start\n- Paste Markdown\n- Upload a `.md` file\n';
+
+  function ready(callback) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', callback);
+    } else {
+      callback();
+    }
+  }
+
+  function setStatus(container, message, isError) {
+    const status = container.querySelector('.markmap-wordpress__status');
+
+    if (!status) return;
+
+    status.textContent = message || '';
+    status.classList.toggle('is-error', Boolean(isError));
+  }
+
+  function getTransformer() {
+    if (!window.markmap || !window.markmap.Transformer || !window.markmap.Markmap) {
+      throw new Error('Markmap assets could not be loaded.');
+    }
+
+    return new window.markmap.Transformer();
+  }
+
+  function getTypes(container) {
+    return container.getAttribute('data-types') || 'page,post';
+  }
+
+  function activateMode(container, mode) {
+    container.setAttribute('data-mode', mode);
+    container.querySelectorAll('.markmap-wordpress__mode').forEach((button) => {
+      button.classList.toggle('is-active', button.getAttribute('data-mode') === mode);
+    });
+  }
+
+  function getEmbeddedMarkdown(container) {
+    const source = container.querySelector('.markmap-wordpress__source');
+
+    if (!source) return '';
+
+    try {
+      return JSON.parse(source.textContent || '""');
+    } catch (error) {
+      return source.textContent || '';
+    }
+  }
+
+  function renderMarkdown(container, markdown, shouldFit) {
+    const svg = container.querySelector('.markmap-wordpress__svg');
+    const transformer = getTransformer();
+    const result = transformer.transform(markdown || DEFAULT_MARKDOWN);
+    const options = window.markmap.deriveOptions(result.frontmatter && result.frontmatter.markmap);
+    let instance = container.markmapInstance;
+
+    if (!instance) {
+      instance = window.markmap.Markmap.create(svg, options, result.root);
+      container.markmapInstance = instance;
+    } else {
+      instance.setOptions(options);
+      instance.setData(result.root);
+    }
+
+    if (shouldFit !== false) {
+      window.setTimeout(() => instance.fit(), 40);
+    }
+  }
+
+  async function renderSitemap(container) {
+    setStatus(container, 'Generating sitemap...');
+    const url = new URL(window.MarkmapWordPress.restUrl);
+    url.searchParams.set('types', getTypes(container));
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        'X-WP-Nonce': window.MarkmapWordPress.nonce,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('WordPress returned an error while generating the sitemap.');
+    }
+
+    const payload = await response.json();
+    renderMarkdown(container, payload.markdown, true);
+    setStatus(container, '');
+  }
+
+  function initialize(container) {
+    const textarea = container.querySelector('textarea');
+    const fileInput = container.querySelector('input[type="file"]');
+    const configuredMode = container.getAttribute('data-mode') || 'markdown';
+    const embeddedMarkdown = getEmbeddedMarkdown(container);
+
+    activateMode(container, configuredMode);
+
+    container.querySelectorAll('.markmap-wordpress__mode').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const mode = button.getAttribute('data-mode');
+        activateMode(container, mode);
+
+        try {
+          if (mode === 'sitemap') {
+            await renderSitemap(container);
+          } else {
+            renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
+            setStatus(container, '');
+          }
+        } catch (error) {
+          setStatus(container, error.message, true);
+        }
+      });
+    });
+
+    if (textarea) {
+      textarea.addEventListener('input', () => {
+        if (container.getAttribute('data-mode') === 'markdown') {
+          renderMarkdown(container, textarea.value, false);
+        }
+      });
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener('change', async () => {
+        const file = fileInput.files && fileInput.files[0];
+
+        if (!file) return;
+
+        try {
+          const text = await file.text();
+          textarea.value = text;
+          activateMode(container, 'markdown');
+          renderMarkdown(container, text, true);
+          setStatus(container, file.name);
+        } catch (error) {
+          setStatus(container, 'The selected file could not be read.', true);
+        }
+      });
+    }
+
+    container.querySelectorAll('.markmap-wordpress__fit').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (container.markmapInstance) {
+          container.markmapInstance.fit();
+        }
+      });
+    });
+
+    container.querySelectorAll('.markmap-wordpress__fullscreen').forEach((button) => {
+      button.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement === container) {
+            await document.exitFullscreen();
+          } else if (container.requestFullscreen) {
+            await container.requestFullscreen();
+          }
+
+          if (container.markmapInstance) {
+            window.setTimeout(() => container.markmapInstance.fit(), 120);
+          }
+        } catch (error) {
+          setStatus(container, 'Fullscreen is not available in this browser.', true);
+        }
+      });
+    });
+
+    try {
+      if (configuredMode === 'sitemap') {
+        renderSitemap(container).catch((error) => setStatus(container, error.message, true));
+      } else {
+        renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
+      }
+    } catch (error) {
+      setStatus(container, error.message, true);
+    }
+  }
+
+  ready(() => {
+    document.querySelectorAll('.markmap-wordpress').forEach(initialize);
+  });
+})();

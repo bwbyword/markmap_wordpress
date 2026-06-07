@@ -22,3 +22,37 @@ Markmap is also available in:
 ## Usage
 
 👉 [Read the documentation](https://markmap.js.org/docs) for more detail.
+
+## WordPress Plugin
+
+This fork includes an installable WordPress plugin in [`markmap-wordpress`](./markmap-wordpress).
+
+Add the plugin directory to `wp-content/plugins/`, activate **Markmap WordPress**, then place this shortcode on any page:
+
+```text
+[markmap_wordpress]
+```
+
+Use Markdown mode to paste or upload a `.md` file, or Sitemap mode to generate an interactive visual sitemap from published WordPress content:
+
+```text
+[markmap_wordpress mode="sitemap" height="70vh" types="page,post"]
+```
+
+For a clean read-only page embed, place Markdown between the opening and closing shortcode tags:
+
+```text
+[markmap_wordpress mode="markdown" height="70vh"]
+# Product Plan
+
+## Discovery
+- Interviews
+- Analytics
+
+## Build
+- Prototype
+- Launch
+[/markmap_wordpress]
+```
+
+This renders only the mindmap canvas with subtle fit and fullscreen controls.
