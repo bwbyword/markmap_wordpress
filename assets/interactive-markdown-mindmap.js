@@ -536,6 +536,13 @@
     if (!instance || !instance.state || !instance.state.data) return;
 
     const layout = getLayout(container);
+    if (layout !== 'vertical') {
+      container.querySelectorAll('g.markmap-node, path.markmap-link').forEach((element) => {
+        element.style.display = '';
+      });
+      return;
+    }
+
     projectLayoutRects(instance, layout);
     const nodesByPath = new Map();
     const linksByPath = new Map();
@@ -550,23 +557,21 @@
     });
 
     if (instance.g) {
-      if (layout === 'vertical') {
-        instance.g.interrupt();
-        instance.g.selectAll('*').interrupt();
-      }
+      instance.g.interrupt();
+      instance.g.selectAll('*').interrupt();
 
       instance.g.selectAll('g.markmap-node')
-        .filter((node) => layout !== 'vertical' || nodesByPath.has(node.state.path))
+        .filter((node) => nodesByPath.has(node.state.path))
         .attr('transform', (node) => `translate(${node.state.rect.x},${node.state.rect.y})`);
 
       instance.g.selectAll('path.markmap-link')
-        .filter((link) => layout !== 'vertical' || linksByPath.has(link.target.state.path))
+        .filter((link) => linksByPath.has(link.target.state.path))
         .attr('d', (link) => getLinkPath(link, layout));
     }
 
     container.querySelectorAll('g.markmap-node').forEach((element) => {
       const path = element.getAttribute('data-path');
-      if (layout === 'vertical' && path && !nodesByPath.has(path)) {
+      if (path && !nodesByPath.has(path)) {
         element.style.display = 'none';
         return;
       }
@@ -595,7 +600,7 @@
 
     container.querySelectorAll('path.markmap-link').forEach((element) => {
       const path = element.getAttribute('data-path');
-      if (layout === 'vertical' && path && !linksByPath.has(path)) {
+      if (path && !linksByPath.has(path)) {
         element.style.display = 'none';
         return;
       }
@@ -631,7 +636,7 @@
     const duration = instance.options && instance.options.duration ? instance.options.duration : 500;
     const settleDelays = getLayout(container) === 'vertical'
       ? [0, 80, 180, 320, duration + 80, duration * 2 + 160, duration * 3 + 240]
-      : [0, duration + 80, duration * 2 + 160, duration * 3 + 240];
+      : [duration + 80, duration * 2 + 160, duration * 3 + 240];
     container.layoutSettleToken = settleToken;
 
     settleDelays.forEach((delay, index) => {
