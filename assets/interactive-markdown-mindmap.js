@@ -16,8 +16,40 @@
 
     if (!status) return;
 
+    if (!isError && message && status.textContent === message && status.classList.contains('is-visible') && container.statusTimer) {
+      return;
+    }
+
+    if (container.statusTimer) {
+      window.clearTimeout(container.statusTimer);
+      container.statusTimer = 0;
+    }
+
+    if (container.statusFadeTimer) {
+      window.clearTimeout(container.statusFadeTimer);
+      container.statusFadeTimer = 0;
+    }
+
     status.textContent = message || '';
     status.classList.toggle('is-error', Boolean(isError));
+
+    if (!message) {
+      status.classList.remove('is-visible');
+      return;
+    }
+
+    status.classList.add('is-visible');
+
+    if (isError) return;
+
+    container.statusTimer = window.setTimeout(() => {
+      status.classList.remove('is-visible');
+      container.statusFadeTimer = window.setTimeout(() => {
+        if (!status.classList.contains('is-visible')) {
+          status.textContent = '';
+        }
+      }, 220);
+    }, 3600);
   }
 
   function getTransformer() {

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Interactive Markdown Mindmap
  * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
- * Version: 0.1.6
+ * Version: 0.1.7
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Interactive_Markdown_Mindmap_Plugin {
-    private const VERSION = '0.1.6';
+    private const VERSION = '0.1.7';
     private const REST_NAMESPACE = 'interactive-markdown-mindmap/v1';
     private static ?self $instance = null;
 

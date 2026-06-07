@@ -100,7 +100,14 @@
   color: var(--interactive-markdown-mindmap-muted);
   font-size: 13px;
   min-height: 20px;
+  opacity: 0;
   padding: 8px 12px 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.interactive-markdown-mindmap__status.is-visible {
+  opacity: 1;
 }
 
 .interactive-markdown-mindmap__status:empty {
