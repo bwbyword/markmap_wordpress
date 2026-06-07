@@ -103,7 +103,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $mode = isset($settings['mode']) && $settings['mode'] === 'sitemap' ? 'sitemap' : 'markdown';
         $markdown = isset($settings['markdown']) ? (string) $settings['markdown'] : '';
 
-        echo Interactive_Markdown_Mindmap_Plugin::instance()->render_mindmap(
+        $mindmap_html = Interactive_Markdown_Mindmap_Plugin::instance()->render_mindmap(
             [
                 'mode' => $mode,
                 'height' => isset($settings['height']) ? (string) $settings['height'] : '640px',
@@ -112,5 +112,8 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
             $mode === 'markdown' ? $markdown : null,
             true
         );
+
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_mindmap() escapes dynamic attributes, text, and embedded Markdown JSON internally.
+        echo $mindmap_html;
     }
 }
