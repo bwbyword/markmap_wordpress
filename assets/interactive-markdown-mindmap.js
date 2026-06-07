@@ -771,9 +771,16 @@
     container.querySelectorAll('.interactive-markdown-mindmap__layout').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
-        activateLayout(container, button.getAttribute('data-layout') || 'horizontal');
+        const nextLayout = button.getAttribute('data-layout') || 'horizontal';
+        activateLayout(container, nextLayout);
 
-        if (container.markmapInstance) {
+        if (nextLayout === 'horizontal') {
+          if (container.getAttribute('data-mode') === 'sitemap') {
+            renderSitemap(container).catch((error) => setStatus(container, error.message, true));
+          } else {
+            renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
+          }
+        } else if (container.markmapInstance) {
           scheduleRenderedLayout(container, container.currentMindmapPlan, true);
         }
       });
