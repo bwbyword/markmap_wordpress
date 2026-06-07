@@ -540,7 +540,7 @@
     const nodesByPath = new Map();
     const linksByPath = new Map();
 
-    collectNodes(instance.state.data, []).forEach((node) => {
+    collectVisibleNodes(instance.state.data, 0, []).forEach(({ node }) => {
       if (!node.state || !node.state.path) return;
 
       nodesByPath.set(node.state.path, node);
@@ -556,21 +556,35 @@
       }
 
       instance.g.selectAll('g.markmap-node')
+        .filter((node) => layout !== 'vertical' || nodesByPath.has(node.state.path))
         .attr('transform', (node) => `translate(${node.state.rect.x},${node.state.rect.y})`);
 
       instance.g.selectAll('path.markmap-link')
+        .filter((link) => layout !== 'vertical' || linksByPath.has(link.target.state.path))
         .attr('d', (link) => getLinkPath(link, layout));
     }
 
     container.querySelectorAll('g.markmap-node').forEach((element) => {
-      const node = element.__data__ || nodesByPath.get(element.getAttribute('data-path'));
+      const path = element.getAttribute('data-path');
+      if (layout === 'vertical' && path && !nodesByPath.has(path)) {
+        element.remove();
+        return;
+      }
+
+      const node = element.__data__ || nodesByPath.get(path);
       if (!node || !node.state || !node.state.rect) return;
 
       element.setAttribute('transform', `translate(${node.state.rect.x},${node.state.rect.y})`);
     });
 
     container.querySelectorAll('path.markmap-link').forEach((element) => {
-      const link = element.__data__ || linksByPath.get(element.getAttribute('data-path'));
+      const path = element.getAttribute('data-path');
+      if (layout === 'vertical' && path && !linksByPath.has(path)) {
+        element.remove();
+        return;
+      }
+
+      const link = element.__data__ || linksByPath.get(path);
       if (!link || !link.source || !link.target) return;
 
       element.setAttribute('d', getLinkPath(link, layout));
