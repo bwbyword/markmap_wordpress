@@ -171,10 +171,21 @@ final class Interactive_Markdown_Mindmap_Plugin {
 
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Interactive Markdown Mindmap Usage', 'interactive-markdown-mindmap'); ?></h1>
-            <p>
-                <?php esc_html_e('Use the shortcode below to render Markdown mindmaps or visual sitemaps inside WordPress pages, posts, and Elementor layouts.', 'interactive-markdown-mindmap'); ?>
-            </p>
+            <div style="align-items: center; display: flex; gap: 18px; margin: 18px 0 24px; max-width: 900px;">
+                <img
+                    src="<?php echo esc_url(plugin_dir_url(__FILE__) . 'assets/logo.png'); ?>"
+                    alt="<?php esc_attr_e('Interactive Markdown Mindmap logo', 'interactive-markdown-mindmap'); ?>"
+                    width="96"
+                    height="96"
+                    style="border-radius: 20px; height: 96px; object-fit: contain; width: 96px;"
+                >
+                <div>
+                    <h1 style="margin-bottom: 8px;"><?php esc_html_e('Interactive Markdown Mindmap Usage', 'interactive-markdown-mindmap'); ?></h1>
+                    <p style="font-size: 15px; margin: 0;">
+                        <?php esc_html_e('Use the shortcode below to render Markdown mindmaps or visual sitemaps inside WordPress pages, posts, and Elementor layouts.', 'interactive-markdown-mindmap'); ?>
+                    </p>
+                </div>
+            </div>
 
             <h2><?php esc_html_e('Quick Start', 'interactive-markdown-mindmap'); ?></h2>
             <p><?php esc_html_e('Add this shortcode to any page or post to show the interactive editor, upload control, and mindmap canvas.', 'interactive-markdown-mindmap'); ?></p>
