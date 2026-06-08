@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.20
+Stable tag: 0.1.21
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -145,6 +145,10 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.21 =
+
+* Re-applied wireframe content-brick cards after Markmap restores raw text nodes during fold and unfold animations.
 
 = 0.1.20 =
 

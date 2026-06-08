@@ -439,7 +439,7 @@
 
   function parseBrickStackText(text, plan) {
     const labels = getPlanBrickLabels(plan);
-    const pattern = new RegExp(`-\\s*(${labels.join('|')})\\s+-\\s*`, 'gi');
+    const pattern = new RegExp(`[\\-–—]\\s*(${labels.join('|')})\\s*[\\-–—]\\s*`, 'gi');
     const matches = [...String(text || '').matchAll(pattern)];
 
     if (!matches.length) return [];
@@ -525,22 +525,23 @@
   function renderBrickCard(brick, parentKey, index) {
     const type = slugifyBrickType(brick.type);
     const typeLabel = getBrickTypeLabel(type);
+    const isReadonly = parentKey.indexOf('__readonly_') === 0;
 
     return `
-      <div class="imm-wireframe-card imm-wireframe-card--${escapeHtml(type)}" draggable="true" data-parent-key="${escapeHtml(parentKey)}" data-index="${index}" data-name="${escapeHtml(brick.name)}" data-type="${escapeHtml(type)}">
+      <div class="imm-wireframe-card imm-wireframe-card--${escapeHtml(type)}" draggable="${isReadonly ? 'false' : 'true'}" data-parent-key="${escapeHtml(parentKey)}" data-index="${index}" data-name="${escapeHtml(brick.name)}" data-type="${escapeHtml(type)}">
         <div class="imm-wireframe-card__bar" aria-hidden="true">
           <span></span><span></span><span></span>
-          <button type="button" class="imm-wireframe-card__control imm-wireframe-card__remove" aria-label="Remove ${escapeHtml(brick.name)}">×</button>
+          ${isReadonly ? '' : `<button type="button" class="imm-wireframe-card__control imm-wireframe-card__remove" aria-label="Remove ${escapeHtml(brick.name)}">×</button>`}
         </div>
         <div class="imm-wireframe-card__title">
           <strong>${escapeHtml(brick.name)}</strong>
           <small>${escapeHtml(typeLabel)}</small>
         </div>
         <div class="imm-wireframe-card__preview" aria-hidden="true">${getWireframePattern(type)}</div>
-        <div class="imm-wireframe-card__actions">
+        ${isReadonly ? '' : `<div class="imm-wireframe-card__actions">
           <button type="button" class="imm-wireframe-card__control imm-wireframe-card__up" aria-label="Move ${escapeHtml(brick.name)} up">↑</button>
           <button type="button" class="imm-wireframe-card__control imm-wireframe-card__down" aria-label="Move ${escapeHtml(brick.name)} down">↓</button>
-        </div>
+        </div>`}
       </div>
     `;
   }
@@ -551,14 +552,13 @@
 
     const usedKeys = new Set();
 
-    container.querySelectorAll('.markmap-foreign > div > div').forEach((nodeContent) => {
+    container.querySelectorAll('.markmap-foreign > div > div').forEach((nodeContent, index) => {
       if (nodeContent.querySelector('.imm-brick-stack')) return;
 
       const bricks = parseBrickStackText(nodeContent.textContent || '', plan);
       if (!bricks.length) return;
 
-      const parentKey = findBrickGroupKey(plan, bricks, usedKeys);
-      if (!parentKey) return;
+      const parentKey = findBrickGroupKey(plan, bricks, usedKeys) || `__readonly_${index}`;
 
       nodeContent.innerHTML = `
         <div class="imm-brick-stack" data-parent-key="${escapeHtml(parentKey)}">
@@ -594,6 +594,15 @@
     });
 
     return resized;
+  }
+
+  function hasRawBrickStackText(container, plan) {
+    if (!plan || !plan.birdseye || getBrickStyle(container) !== 'wireframe') return false;
+
+    return [...container.querySelectorAll('.markmap-foreign > div > div')].some((nodeContent) => (
+      !nodeContent.querySelector('.imm-brick-stack')
+      && parseBrickStackText(nodeContent.textContent || '', plan).length > 0
+    ));
   }
 
   function decorateMindmap(container, plan) {
@@ -985,6 +994,10 @@
 
     if (shouldFit !== false) {
       return Promise.resolve(instance.fit()).then(() => {
+        decorateMindmap(container, plan);
+        if (resizeBrickStackNodes(container)) {
+          applyLayout(container);
+        }
         restoreVerticalSvgVisibility(container);
         return null;
       });
@@ -1276,6 +1289,31 @@
     });
   }
 
+  function observeBrickStackRestores(container) {
+    const svg = container.querySelector('.interactive-markdown-mindmap__svg');
+    if (!svg || container.brickStackObserver) return;
+
+    container.brickStackObserver = new MutationObserver(() => {
+      if (container.brickStackFrame) return;
+
+      container.brickStackFrame = window.requestAnimationFrame(() => {
+        container.brickStackFrame = 0;
+
+        if (!hasRawBrickStackText(container, container.currentMindmapPlan)) return;
+
+        finishRenderedLayout(container, container.currentMindmapPlan, false).catch((error) => {
+          setStatus(container, error.message, true);
+        });
+      });
+    });
+
+    container.brickStackObserver.observe(svg, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+  }
+
   async function renderSitemap(container) {
     setStatus(container, 'Generating sitemap...');
     const url = new URL(window.InteractiveMarkdownMindmap.restUrl);
@@ -1312,6 +1350,7 @@
     activateLayout(container, getLayout(container));
     activateBrickStyle(container, getBrickStyle(container));
     bindBrickStackInteractions(container, textarea, embeddedMarkdown);
+    observeBrickStackRestores(container);
 
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
       button.addEventListener('click', async () => {
