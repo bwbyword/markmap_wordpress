@@ -54,7 +54,8 @@
 
 .interactive-markdown-mindmap__planning.is-active,
 .interactive-markdown-mindmap__birdseye.is-active,
-.interactive-markdown-mindmap__layout.is-active {
+.interactive-markdown-mindmap__layout.is-active,
+.interactive-markdown-mindmap__brick-style.is-active {
   border-color: var(--interactive-markdown-mindmap-accent);
   color: var(--interactive-markdown-mindmap-accent);
 }

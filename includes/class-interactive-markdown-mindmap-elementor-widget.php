@@ -133,6 +133,19 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
             ]
         );
 
+        $this->add_control(
+            'brick_style',
+            [
+                'label' => __('Content Brick Style', 'interactive-markdown-mindmap'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => 'wireframe',
+                'options' => [
+                    'wireframe' => __('Wireframe Cards', 'interactive-markdown-mindmap'),
+                    'text' => __('Text List', 'interactive-markdown-mindmap'),
+                ],
+            ]
+        );
+
         $this->end_controls_section();
     }
 
@@ -148,6 +161,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
                 'planning' => isset($settings['planning']) ? (string) $settings['planning'] : 'structure-first',
                 'birdseye' => !empty($settings['birdseye']) ? 'true' : 'false',
                 'layout' => isset($settings['layout']) ? (string) $settings['layout'] : 'horizontal',
+                'brick_style' => isset($settings['brick_style']) ? (string) $settings['brick_style'] : 'wireframe',
                 'types' => isset($settings['types']) ? (string) $settings['types'] : 'page,post',
             ],
             $mode === 'markdown' ? $markdown : null,

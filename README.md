@@ -16,6 +16,7 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 - Content Brick syntax for planning page sections inside Markdown.
 - CSS-only wireframe blocks for content bricks in Bird's Eye View.
 - Drag, move, and remove content bricks within each page stack.
+- Toggle content bricks between wireframe cards and the original text list view.
 - Mainpage First and Structure First planning modes.
 - Bird's Eye View for seeing every content brick list at once.
 - Brick count badges on collapsed page nodes.
@@ -116,6 +117,12 @@ Normal view shows a brick count badge on the parent node. Bird's Eye View expand
 
 In Bird's Eye View, users can drag content bricks within the same page stack, use the up/down controls, or remove a brick. When an editor is available, the Markdown source is updated with the new brick order.
 
+Use the brick-style toggle or shortcode option to switch between the wireframe cards and the original text list:
+
+```text
+[interactive_markdown_mindmap mode="markdown" birdseye="true" brick_style="text"]
+```
+
 Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `[text]`, `[video]`, `[list]`, `[features]`, `[cards]`, `[form]`, `[map]`, `[table]`, `[chart]`, `[faq]`, `[accordion]`, `[cta]`, `[subscribe]`, `[footer]`, and other custom tags. Unknown tags fall back to a generic text wireframe.
 
 ## Shortcode Options
@@ -126,6 +133,7 @@ Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `
 - `planning`: `structure-first` or `mainpage-first`.
 - `birdseye`: `true` or `false`.
 - `layout`: `horizontal` or `vertical`.
+- `brick_style`: `wireframe` or `text`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
 

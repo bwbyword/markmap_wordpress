@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Interactive Markdown Mindmap
  * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
- * Version: 0.1.19
+ * Version: 0.1.20
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Interactive_Markdown_Mindmap_Plugin {
-    private const VERSION = '0.1.19';
+    private const VERSION = '0.1.20';
     private const REST_NAMESPACE = 'interactive-markdown-mindmap/v1';
     private static ?self $instance = null;
 
@@ -223,7 +223,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
 ## Contact
 - [brick][form] Contact Form
 - [brick][footer] Footer'); ?>
-            <p><?php esc_html_e('In Bird\'s Eye View, brick blocks can be moved up or down, dragged within the same stack, or removed. The Markdown source is updated with the new brick order.', 'interactive-markdown-mindmap'); ?></p>
+            <p><?php esc_html_e('In Bird\'s Eye View, brick blocks can be moved up or down, dragged within the same stack, or removed. The Markdown source is updated with the new brick order. Use the brick style toggle to switch between wireframe cards and the original text list view.', 'interactive-markdown-mindmap'); ?></p>
             <p><?php esc_html_e('Common brick tags include header, hero, image, slider, text, video, list, features, cards, form, map, table, chart, faq, accordion, cta, subscribe, footer, and more. Unknown tags still render with a generic text wireframe.', 'interactive-markdown-mindmap'); ?></p>
 
             <h2><?php esc_html_e('Shortcode Options', 'interactive-markdown-mindmap'); ?></h2>
@@ -265,6 +265,11 @@ final class Interactive_Markdown_Mindmap_Plugin {
                         <td><code>layout</code></td>
                         <td><code>horizontal</code>, <code>vertical</code></td>
                         <td><?php esc_html_e('Switches between the default left-to-right mindmap and a top-to-bottom vertical layout.', 'interactive-markdown-mindmap'); ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>brick_style</code></td>
+                        <td><code>wireframe</code>, <code>text</code></td>
+                        <td><?php esc_html_e('Controls whether Bird\'s Eye content bricks appear as wireframe cards or as the original text-based list.', 'interactive-markdown-mindmap'); ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -328,6 +333,9 @@ final class Interactive_Markdown_Mindmap_Plugin {
                 'planning' => 'structure-first',
                 'birdseye' => 'false',
                 'layout' => 'horizontal',
+                'brick_style' => 'wireframe',
+                'brick-style' => '',
+                'brickstyle' => '',
                 'types' => 'page,post',
             ],
             $atts,
@@ -338,6 +346,8 @@ final class Interactive_Markdown_Mindmap_Plugin {
         $planning = in_array($atts['planning'], ['mainpage-first', 'structure-first'], true) ? $atts['planning'] : 'structure-first';
         $birdseye = filter_var($atts['birdseye'], FILTER_VALIDATE_BOOLEAN);
         $layout = in_array($atts['layout'], ['horizontal', 'vertical'], true) ? $atts['layout'] : 'horizontal';
+        $brick_style_attr = $atts['brick-style'] !== '' ? $atts['brick-style'] : ($atts['brickstyle'] !== '' ? $atts['brickstyle'] : $atts['brick_style']);
+        $brick_style = in_array($brick_style_attr, ['wireframe', 'text'], true) ? $brick_style_attr : 'wireframe';
         $types = implode(',', $this->normalize_post_types((string) $atts['types']));
         $height_attr = $atts['heigh'] !== '' ? $atts['heigh'] : $atts['height'];
         $height = $this->sanitize_css_size((string) $height_attr);
@@ -357,6 +367,7 @@ final class Interactive_Markdown_Mindmap_Plugin {
             data-planning-mode="<?php echo esc_attr($planning); ?>"
             data-birdseye="<?php echo esc_attr($birdseye ? 'true' : 'false'); ?>"
             data-layout="<?php echo esc_attr($layout); ?>"
+            data-brick-style="<?php echo esc_attr($brick_style); ?>"
             data-types="<?php echo esc_attr($types); ?>"
             style="--interactive-markdown-mindmap-height: <?php echo esc_attr($height); ?>;"
         >
@@ -398,6 +409,12 @@ final class Interactive_Markdown_Mindmap_Plugin {
                 </button>
                 <button class="interactive-markdown-mindmap__layout<?php echo esc_attr($layout === 'vertical' ? ' is-active' : ''); ?>" type="button" data-layout="vertical">
                     <?php esc_html_e('Vertical', 'interactive-markdown-mindmap'); ?>
+                </button>
+                <button class="interactive-markdown-mindmap__brick-style<?php echo esc_attr($brick_style === 'wireframe' ? ' is-active' : ''); ?>" type="button" data-brick-style="wireframe" aria-pressed="<?php echo esc_attr($brick_style === 'wireframe' ? 'true' : 'false'); ?>">
+                    <?php esc_html_e('Brick cards', 'interactive-markdown-mindmap'); ?>
+                </button>
+                <button class="interactive-markdown-mindmap__brick-style<?php echo esc_attr($brick_style === 'text' ? ' is-active' : ''); ?>" type="button" data-brick-style="text" aria-pressed="<?php echo esc_attr($brick_style === 'text' ? 'true' : 'false'); ?>">
+                    <?php esc_html_e('Brick text', 'interactive-markdown-mindmap'); ?>
                 </button>
             </div>
             <div class="interactive-markdown-mindmap__editor" data-panel="markdown">
@@ -451,6 +468,14 @@ final class Interactive_Markdown_Mindmap_Plugin {
                             <path d="M4 5h16"></path>
                             <path d="M4 12h16"></path>
                             <path d="M4 19h16"></path>
+                        </svg>
+                    </button>
+                    <button class="interactive-markdown-mindmap__icon-button interactive-markdown-mindmap__brick-style<?php echo esc_attr($brick_style === 'wireframe' ? ' is-active' : ''); ?>" type="button" data-brick-style="<?php echo esc_attr($brick_style === 'wireframe' ? 'text' : 'wireframe'); ?>" aria-label="<?php esc_attr_e('Toggle content brick style', 'interactive-markdown-mindmap'); ?>" aria-pressed="<?php echo esc_attr($brick_style === 'wireframe' ? 'true' : 'false'); ?>">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                            <path d="M5 5h6v5H5z"></path>
+                            <path d="M13 5h6v5h-6z"></path>
+                            <path d="M5 14h14"></path>
+                            <path d="M5 18h10"></path>
                         </svg>
                     </button>
                     <button class="interactive-markdown-mindmap__icon-button interactive-markdown-mindmap__layout" type="button" data-layout="<?php echo esc_attr($layout === 'vertical' ? 'horizontal' : 'vertical'); ?>" aria-label="<?php esc_attr_e('Toggle horizontal or vertical layout', 'interactive-markdown-mindmap'); ?>">

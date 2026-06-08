@@ -95,6 +95,10 @@
     return container.getAttribute('data-layout') === 'vertical' ? 'vertical' : 'horizontal';
   }
 
+  function getBrickStyle(container) {
+    return container.getAttribute('data-brick-style') === 'text' ? 'text' : 'wireframe';
+  }
+
   function activateMode(container, mode) {
     container.setAttribute('data-mode', mode);
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
@@ -130,6 +134,25 @@
         button.classList.toggle('is-active', nextLayout === 'vertical');
       } else {
         button.classList.toggle('is-active', buttonLayout === nextLayout);
+      }
+    });
+  }
+
+  function activateBrickStyle(container, style) {
+    const nextStyle = style === 'text' ? 'text' : 'wireframe';
+    container.setAttribute('data-brick-style', nextStyle);
+
+    container.querySelectorAll('.interactive-markdown-mindmap__brick-style').forEach((button) => {
+      const buttonStyle = button.getAttribute('data-brick-style');
+      const isToggleOnly = button.classList.contains('interactive-markdown-mindmap__icon-button');
+
+      if (isToggleOnly) {
+        button.setAttribute('data-brick-style', nextStyle === 'wireframe' ? 'text' : 'wireframe');
+        button.classList.toggle('is-active', nextStyle === 'wireframe');
+        button.setAttribute('aria-pressed', nextStyle === 'wireframe' ? 'true' : 'false');
+      } else {
+        button.classList.toggle('is-active', buttonStyle === nextStyle);
+        button.setAttribute('aria-pressed', buttonStyle === nextStyle ? 'true' : 'false');
       }
     });
   }
@@ -524,6 +547,7 @@
 
   function renderBrickStacks(container, plan) {
     if (!plan.birdseye) return;
+    if (getBrickStyle(container) !== 'wireframe') return;
 
     const usedKeys = new Set();
 
@@ -1286,6 +1310,7 @@
     activatePlanning(container, getPlanningMode(container));
     activateBirdseye(container, isBirdseye(container));
     activateLayout(container, getLayout(container));
+    activateBrickStyle(container, getBrickStyle(container));
     bindBrickStackInteractions(container, textarea, embeddedMarkdown);
 
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
@@ -1339,6 +1364,20 @@
           }
         } else if (container.markmapInstance) {
           scheduleRenderedLayout(container, container.currentMindmapPlan, true);
+        }
+      });
+    });
+
+    container.querySelectorAll('.interactive-markdown-mindmap__brick-style').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const nextStyle = button.getAttribute('data-brick-style') || 'wireframe';
+        activateBrickStyle(container, nextStyle);
+
+        if (container.getAttribute('data-mode') === 'sitemap') {
+          renderSitemap(container).catch((error) => setStatus(container, error.message, true));
+        } else {
+          renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
         }
       });
     });

@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.19
+Stable tag: 0.1.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,7 @@ The plugin supports:
 * Content Brick planning syntax for defining page sections inside Markdown.
 * CSS-only wireframe blocks for content bricks in Bird's Eye View.
 * Drag, move, and remove content bricks within each page stack.
+* Toggle content bricks between wireframe cards and the original text list view.
 * Mainpage First and Structure First planning modes.
 * Bird's Eye View for showing all content brick lists at once.
 * Brick count badges on collapsed page nodes.
@@ -87,6 +88,10 @@ Add content bricks under any page or section:
 
 Bird's Eye View expands brick lists as stackable CSS wireframe blocks. Users can drag content bricks within the same page stack, use the up/down controls, or remove a brick. When an editor is available, the Markdown source is updated with the new brick order.
 
+Use the brick-style toggle or shortcode option to switch between wireframe cards and the original text list:
+
+`[interactive_markdown_mindmap mode="markdown" birdseye="true" brick_style="text"]`
+
 Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `[text]`, `[video]`, `[list]`, `[features]`, `[cards]`, `[form]`, `[map]`, `[table]`, `[chart]`, `[faq]`, `[accordion]`, `[cta]`, `[subscribe]`, `[footer]`, and other custom tags. Unknown tags fall back to a generic text wireframe.
 
 = Visual sitemap =
@@ -107,6 +112,7 @@ Include additional public post types by changing `types`:
 * `planning`: `structure-first` or `mainpage-first`.
 * `birdseye`: `true` or `false`.
 * `layout`: `horizontal` or `vertical`.
+* `brick_style`: `wireframe` or `text`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
 
@@ -139,6 +145,10 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.20 =
+
+* Added a content-brick style toggle and `brick_style` option for switching Bird's Eye View between wireframe cards and the original text list.
 
 = 0.1.19 =
 
