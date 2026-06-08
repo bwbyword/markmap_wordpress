@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Interactive Markdown Mindmap
  * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
- * Version: 0.1.22
+ * Version: 0.1.23
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Interactive_Markdown_Mindmap_Plugin {
-    private const VERSION = '0.1.22';
+    private const VERSION = '0.1.23';
     private const REST_NAMESPACE = 'interactive-markdown-mindmap/v1';
     private static ?self $instance = null;
 
@@ -204,6 +204,16 @@ final class Interactive_Markdown_Mindmap_Plugin {
 - Prototype
 - Launch
 [/interactive_markdown_mindmap]'); ?>
+            <?php $this->render_code_example('[interactive_markdown_mindmap mode="markdown" default_view="vertical" height="70vh"]
+# Website Plan
+
+## Homepage
+- [brick][hero] Hero
+- [brick][features] Features
+
+## Contact
+- [brick][form] Contact Form
+[/interactive_markdown_mindmap]'); ?>
 
             <h2><?php esc_html_e('Visual Sitemap', 'interactive-markdown-mindmap'); ?></h2>
             <p><?php esc_html_e('Use sitemap mode to generate a mindmap from published WordPress content. The types option accepts comma-separated public post types.', 'interactive-markdown-mindmap'); ?></p>
@@ -262,9 +272,9 @@ final class Interactive_Markdown_Mindmap_Plugin {
                         <td><?php esc_html_e('Shows all content brick lists at once for a full project-scope view.', 'interactive-markdown-mindmap'); ?></td>
                     </tr>
                     <tr>
-                        <td><code>layout</code></td>
+                        <td><code>default_view</code></td>
                         <td><code>horizontal</code>, <code>vertical</code></td>
-                        <td><?php esc_html_e('Switches between the default left-to-right mindmap and a top-to-bottom vertical layout.', 'interactive-markdown-mindmap'); ?></td>
+                        <td><?php esc_html_e('Sets whether the mindmap loads in horizontal or vertical view by default. The aliases layout, view, and orientation are also supported.', 'interactive-markdown-mindmap'); ?></td>
                     </tr>
                     <tr>
                         <td><code>brick_style</code></td>
@@ -333,6 +343,10 @@ final class Interactive_Markdown_Mindmap_Plugin {
                 'planning' => 'structure-first',
                 'birdseye' => 'false',
                 'layout' => 'horizontal',
+                'default_view' => '',
+                'default-view' => '',
+                'view' => '',
+                'orientation' => '',
                 'brick_style' => 'wireframe',
                 'brick-style' => '',
                 'brickstyle' => '',
@@ -345,7 +359,15 @@ final class Interactive_Markdown_Mindmap_Plugin {
         $mode = in_array($atts['mode'], ['markdown', 'sitemap'], true) ? $atts['mode'] : 'markdown';
         $planning = in_array($atts['planning'], ['mainpage-first', 'structure-first'], true) ? $atts['planning'] : 'structure-first';
         $birdseye = filter_var($atts['birdseye'], FILTER_VALIDATE_BOOLEAN);
-        $layout = in_array($atts['layout'], ['horizontal', 'vertical'], true) ? $atts['layout'] : 'horizontal';
+        $layout_attr = $atts['default_view'] !== ''
+            ? $atts['default_view']
+            : ($atts['default-view'] !== ''
+                ? $atts['default-view']
+                : ($atts['view'] !== ''
+                    ? $atts['view']
+                    : ($atts['orientation'] !== '' ? $atts['orientation'] : $atts['layout'])));
+        $layout_attr = strtolower((string) $layout_attr);
+        $layout = in_array($layout_attr, ['horizontal', 'vertical'], true) ? $layout_attr : 'horizontal';
         $brick_style_attr = $atts['brick-style'] !== '' ? $atts['brick-style'] : ($atts['brickstyle'] !== '' ? $atts['brickstyle'] : $atts['brick_style']);
         $brick_style = in_array($brick_style_attr, ['wireframe', 'text'], true) ? $brick_style_attr : 'wireframe';
         $types = implode(',', $this->normalize_post_types((string) $atts['types']));

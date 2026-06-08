@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.22
+Stable tag: 0.1.23
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -111,7 +111,7 @@ Include additional public post types by changing `types`:
 * `types`: comma-separated public post types used by sitemap mode.
 * `planning`: `structure-first` or `mainpage-first`.
 * `birdseye`: `true` or `false`.
-* `layout`: `horizontal` or `vertical`.
+* `default_view`: `horizontal` or `vertical`. Aliases: `layout`, `view`, and `orientation`.
 * `brick_style`: `wireframe` or `text`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
@@ -145,6 +145,10 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.23 =
+
+* Added a user-facing default view option for Elementor and shortcode aliases for loading mindmaps horizontally or vertically by default.
 
 = 0.1.22 =
 

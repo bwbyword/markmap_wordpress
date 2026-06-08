@@ -123,13 +123,21 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'layout',
             [
-                'label' => __('Layout', 'interactive-markdown-mindmap'),
-                'type' => \Elementor\Controls_Manager::SELECT,
+                'label' => __('Default View', 'interactive-markdown-mindmap'),
+                'type' => \Elementor\Controls_Manager::CHOOSE,
                 'default' => 'horizontal',
                 'options' => [
-                    'horizontal' => __('Horizontal', 'interactive-markdown-mindmap'),
-                    'vertical' => __('Vertical', 'interactive-markdown-mindmap'),
+                    'horizontal' => [
+                        'title' => __('Horizontal', 'interactive-markdown-mindmap'),
+                        'icon' => 'eicon-h-align-left',
+                    ],
+                    'vertical' => [
+                        'title' => __('Vertical', 'interactive-markdown-mindmap'),
+                        'icon' => 'eicon-v-align-top',
+                    ],
                 ],
+                'toggle' => false,
+                'description' => __('Choose how the mindmap loads before visitors use the view toggle.', 'interactive-markdown-mindmap'),
             ]
         );
 

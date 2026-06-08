@@ -132,7 +132,7 @@ Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `
 - `types`: comma-separated public post types used by sitemap mode.
 - `planning`: `structure-first` or `mainpage-first`.
 - `birdseye`: `true` or `false`.
-- `layout`: `horizontal` or `vertical`.
+- `default_view`: `horizontal` or `vertical`. Aliases: `layout`, `view`, and `orientation`.
 - `brick_style`: `wireframe` or `text`.
 
 `height` is the preferred spelling. The plugin also accepts `heigh` as a typo-compatible alias.
