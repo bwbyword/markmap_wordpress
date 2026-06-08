@@ -1,3 +1,5 @@
+![Interactive Markdown Mindmap banner](banner.png)
+
 # Interactive Markdown Mindmap
 
 Interactive Markdown Mindmap is a standalone WordPress plugin that renders Markdown as interactive Markmap mindmaps, or generates a visual sitemap from published WordPress content.
