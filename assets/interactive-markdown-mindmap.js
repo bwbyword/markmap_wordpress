@@ -596,6 +596,38 @@
     return resized;
   }
 
+  function syncRenderedGeometry(container) {
+    const instance = container.markmapInstance;
+    if (!instance || !instance.state || !instance.state.data) return;
+
+    const layout = getLayout(container);
+
+    container.querySelectorAll('g.markmap-node').forEach((element) => {
+      const node = element.__data__;
+      if (!node || !node.state || !node.state.rect) return;
+
+      element.querySelectorAll('foreignObject').forEach((foreignObject) => {
+        const paddingX = instance.options && typeof instance.options.paddingX === 'number' ? instance.options.paddingX : 8;
+        foreignObject.setAttribute('width', String(Math.max(0, node.state.rect.width - paddingX * 2)));
+        foreignObject.setAttribute('height', String(node.state.rect.height));
+      });
+
+      element.querySelectorAll('line').forEach((line) => {
+        line.setAttribute('x1', '-1');
+        line.setAttribute('x2', String(node.state.rect.width + 2));
+        line.setAttribute('y1', String(node.state.rect.height));
+        line.setAttribute('y2', String(node.state.rect.height));
+      });
+    });
+
+    container.querySelectorAll('path.markmap-link').forEach((element) => {
+      const link = element.__data__;
+      if (!link || !link.source || !link.target || !link.source.state || !link.target.state) return;
+
+      element.setAttribute('d', getLinkPath(link, layout));
+    });
+  }
+
   function hasRawBrickStackText(container, plan) {
     if (!plan || !plan.birdseye || getBrickStyle(container) !== 'wireframe') return false;
 
@@ -991,6 +1023,7 @@
     if (resizeBrickStackNodes(container)) {
       applyLayout(container);
     }
+    syncRenderedGeometry(container);
 
     if (shouldFit !== false) {
       return Promise.resolve(instance.fit()).then(() => {
@@ -998,6 +1031,7 @@
         if (resizeBrickStackNodes(container)) {
           applyLayout(container);
         }
+        syncRenderedGeometry(container);
         restoreVerticalSvgVisibility(container);
         return null;
       });
@@ -1033,6 +1067,7 @@
     const transformer = getTransformer();
     const plan = parseContentPlan(markdown || DEFAULT_MARKDOWN, container);
     const layout = getLayout(container);
+    const brickStyle = getBrickStyle(container);
     const renderToken = (container.markmapRenderToken || 0) + 1;
     container.markmapRenderToken = renderToken;
     container.currentMindmapPlan = plan;
@@ -1043,7 +1078,7 @@
     const options = window.markmap.deriveOptions(result.frontmatter && result.frontmatter.markmap);
     let instance = container.markmapInstance;
 
-    if (instance && layout === 'vertical') {
+    if (instance && (layout === 'vertical' || container.renderedBrickStyle !== brickStyle)) {
       if (instance.destroy) instance.destroy();
       svg.innerHTML = '';
       container.markmapInstance = null;
@@ -1060,6 +1095,7 @@
     Promise.resolve(instance.setData(result.root)).then(() => {
       if (container.markmapRenderToken !== renderToken) return null;
 
+      container.renderedBrickStyle = brickStyle;
       scheduleRenderedLayout(container, plan, shouldFit);
       return null;
     }).catch((error) => {
