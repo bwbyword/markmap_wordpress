@@ -435,17 +435,40 @@
 
   function findBrickGroupKey(plan, bricks, usedKeys) {
     let fallbackKey = '';
+    let bestScore = 0;
+    const parsedNames = bricks.map((brick) => normalizeLabel(brick.name)).filter(Boolean);
 
     plan.bricksByLabel.forEach((group, key) => {
-      if (fallbackKey || usedKeys.has(key) || group.bricks.length !== bricks.length) return;
+      if (usedKeys.has(key)) return;
 
-      const isMatch = group.bricks.every((brick, index) => {
+      if (group.bricks.length === bricks.length) {
+        const isExactMatch = group.bricks.every((brick, index) => {
+          const item = bricks[index];
+          return normalizeLabel(brick.name) === normalizeLabel(item.name)
+            && slugifyBrickType(brick.type) === slugifyBrickType(item.type);
+        });
+
+        if (isExactMatch) {
+          fallbackKey = key;
+          bestScore = Number.MAX_SAFE_INTEGER;
+          return;
+        }
+      }
+
+      if (bestScore === Number.MAX_SAFE_INTEGER) return;
+
+      const groupNames = group.bricks.map((brick) => normalizeLabel(brick.name)).filter(Boolean);
+      const nameMatches = parsedNames.filter((name) => groupNames.includes(name)).length;
+      const typeMatches = group.bricks.filter((brick, index) => {
         const item = bricks[index];
-        return normalizeLabel(brick.name) === normalizeLabel(item.name)
-          && slugifyBrickType(brick.type) === slugifyBrickType(item.type);
-      });
+        return item && slugifyBrickType(brick.type) === slugifyBrickType(item.type);
+      }).length;
+      const score = nameMatches * 10 + typeMatches - Math.abs(group.bricks.length - bricks.length);
 
-      if (isMatch) fallbackKey = key;
+      if (nameMatches && score > bestScore) {
+        fallbackKey = key;
+        bestScore = score;
+      }
     });
 
     if (fallbackKey) {
@@ -954,7 +977,7 @@
     const settleToken = (container.layoutSettleToken || 0) + 1;
     const duration = instance.options && instance.options.duration ? instance.options.duration : 500;
     const settleDelays = getLayout(container) === 'vertical'
-      ? [0, 80, 180, 320, duration + 80, duration * 2 + 160, duration * 3 + 240]
+      ? [0, 80, 180, 320, duration + 80, duration * 2 + 160, duration * 3 + 240, duration * 5 + 400]
       : [duration + 80, duration * 2 + 160, duration * 3 + 240];
     container.layoutSettleToken = settleToken;
 
