@@ -12,6 +12,8 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 - Read-only Markdown embeds using enclosing shortcode content.
 - Sitemap mode for generating a visual mindmap from published WordPress content.
 - Content Brick syntax for planning page sections inside Markdown.
+- CSS-only wireframe blocks for content bricks in Bird's Eye View.
+- Drag, move, and remove content bricks within each page stack.
 - Mainpage First and Structure First planning modes.
 - Bird's Eye View for seeing every content brick list at once.
 - Brick count badges on collapsed page nodes.
@@ -99,7 +101,8 @@ Add content bricks as indented list items under any page or section:
 
 ## Homepage
 - [brick][header] Header
-- [brick][image] Hero
+- [brick][hero] Hero
+- [brick][features] Services
 - [brick][text] About
 
 ## Contact
@@ -107,9 +110,11 @@ Add content bricks as indented list items under any page or section:
 - [brick][footer] Footer
 ```
 
-Normal view shows a brick count badge on the parent node. Bird's Eye View expands all brick lists at once.
+Normal view shows a brick count badge on the parent node. Bird's Eye View expands all brick lists at once as stackable CSS wireframe blocks.
 
-Supported brick type tags include `[image]`, `[text]`, `[video]`, `[form]`, `[list]`, `[header]`, and `[footer]`.
+In Bird's Eye View, users can drag content bricks within the same page stack, use the up/down controls, or remove a brick. When an editor is available, the Markdown source is updated with the new brick order.
+
+Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `[text]`, `[video]`, `[list]`, `[features]`, `[cards]`, `[form]`, `[map]`, `[table]`, `[chart]`, `[faq]`, `[accordion]`, `[cta]`, `[subscribe]`, `[footer]`, and other custom tags. Unknown tags fall back to a generic text wireframe.
 
 ## Shortcode Options
 

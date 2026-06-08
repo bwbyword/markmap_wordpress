@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Interactive Markdown Mindmap
  * Description: Render Markdown files as interactive Markmap mindmaps or generate a visual sitemap from site content.
- * Version: 0.1.17
+ * Version: 0.1.18
  * Author: bwbyword
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 final class Interactive_Markdown_Mindmap_Plugin {
-    private const VERSION = '0.1.17';
+    private const VERSION = '0.1.18';
     private const REST_NAMESPACE = 'interactive-markdown-mindmap/v1';
     private static ?self $instance = null;
 
@@ -211,17 +211,20 @@ final class Interactive_Markdown_Mindmap_Plugin {
             <?php $this->render_code_example('[interactive_markdown_mindmap mode="sitemap" types="page,post,product"]'); ?>
 
             <h2><?php esc_html_e('Content Bricks', 'interactive-markdown-mindmap'); ?></h2>
-            <p><?php esc_html_e('Add content bricks as indented list items under a page or section. Normal view shows a brick count badge on the parent node; Bird\'s Eye View expands all brick lists.', 'interactive-markdown-mindmap'); ?></p>
+            <p><?php esc_html_e('Add content bricks as indented list items under a page or section. Normal view shows a brick count badge on the parent node; Bird\'s Eye View expands all brick lists as stackable CSS wireframe blocks.', 'interactive-markdown-mindmap'); ?></p>
             <?php $this->render_code_example('# Website Plan
 
 ## Homepage
 - [brick][header] Header
-- [brick][image] Hero
+- [brick][hero] Hero
+- [brick][features] Services
 - [brick][text] About
 
 ## Contact
 - [brick][form] Contact Form
 - [brick][footer] Footer'); ?>
+            <p><?php esc_html_e('In Bird\'s Eye View, brick blocks can be moved up or down, dragged within the same stack, or removed. The Markdown source is updated with the new brick order.', 'interactive-markdown-mindmap'); ?></p>
+            <p><?php esc_html_e('Common brick tags include header, hero, image, slider, text, video, list, features, cards, form, map, table, chart, faq, accordion, cta, subscribe, footer, and more. Unknown tags still render with a generic text wireframe.', 'interactive-markdown-mindmap'); ?></p>
 
             <h2><?php esc_html_e('Shortcode Options', 'interactive-markdown-mindmap'); ?></h2>
             <table class="widefat striped" style="max-width: 900px;">
@@ -402,7 +405,8 @@ final class Interactive_Markdown_Mindmap_Plugin {
 
 ## Homepage
 - [brick][header] Header
-- [brick][image] Hero
+- [brick][hero] Hero
+- [brick][features] Services
 - [brick][text] About
 
 ## Contact

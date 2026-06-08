@@ -65,7 +65,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
             [
                 'label' => __('Markdown', 'interactive-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => "# Website Plan\n\n## Homepage\n- [brick][header] Header\n- [brick][image] Hero\n- [brick][text] About\n\n## Contact\n- [brick][form] Contact Form\n- [brick][footer] Footer",
+                'default' => "# Website Plan\n\n## Homepage\n- [brick][header] Header\n- [brick][hero] Hero\n- [brick][features] Services\n- [brick][text] About\n\n## Contact\n- [brick][form] Contact Form\n- [brick][footer] Footer",
                 'rows' => 14,
                 'condition' => [
                     'mode' => 'markdown',

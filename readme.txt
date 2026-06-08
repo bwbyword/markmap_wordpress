@@ -4,7 +4,7 @@ Tags: markdown, mindmap, sitemap, shortcode, elementor
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 0.1.17
+Stable tag: 0.1.18
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,8 @@ The plugin supports:
 * Read-only Markdown embeds using enclosing shortcode content.
 * Sitemap mode for generating a visual mindmap from published WordPress content.
 * Content Brick planning syntax for defining page sections inside Markdown.
+* CSS-only wireframe blocks for content bricks in Bird's Eye View.
+* Drag, move, and remove content bricks within each page stack.
 * Mainpage First and Structure First planning modes.
 * Bird's Eye View for showing all content brick lists at once.
 * Brick count badges on collapsed page nodes.
@@ -74,7 +76,8 @@ Add content bricks under any page or section:
 
 ## Homepage
 - [brick][header] Header
-- [brick][image] Hero
+- [brick][hero] Hero
+- [brick][features] Services
 - [brick][text] About
 
 ## Contact
@@ -82,7 +85,9 @@ Add content bricks under any page or section:
 - [brick][footer] Footer
 `
 
-Supported brick type tags include `[image]`, `[text]`, `[video]`, `[form]`, `[list]`, `[header]`, and `[footer]`.
+Bird's Eye View expands brick lists as stackable CSS wireframe blocks. Users can drag content bricks within the same page stack, use the up/down controls, or remove a brick. When an editor is available, the Markdown source is updated with the new brick order.
+
+Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `[text]`, `[video]`, `[list]`, `[features]`, `[cards]`, `[form]`, `[map]`, `[table]`, `[chart]`, `[faq]`, `[accordion]`, `[cta]`, `[subscribe]`, `[footer]`, and other custom tags. Unknown tags fall back to a generic text wireframe.
 
 = Visual sitemap =
 
@@ -134,6 +139,10 @@ Yes. The plugin bundles the required browser assets locally and does not load ex
 See `licenses/THIRD-PARTY-NOTICES.txt` and the files in the `licenses` directory.
 
 == Changelog ==
+
+= 0.1.18 =
+
+* Added CSS-only wireframe content-brick cards in Bird's Eye View, with move, drag, and remove controls that update the Markdown source.
 
 = 0.1.17 =
 

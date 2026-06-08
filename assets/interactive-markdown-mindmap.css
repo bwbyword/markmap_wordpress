@@ -227,6 +227,196 @@ span.interactive-markdown-mindmap__badge {
   stroke-width: 2.4px;
 }
 
+.imm-brick-stack {
+  box-sizing: border-box;
+  display: grid;
+  gap: 5px;
+  min-width: 168px;
+  padding: 4px;
+  pointer-events: auto;
+}
+
+.imm-wireframe-card {
+  --imm-card-color: #2f80ed;
+  background: var(--imm-card-color);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: grab;
+  display: grid;
+  gap: 4px;
+  min-height: 58px;
+  padding: 6px 7px;
+  position: relative;
+  user-select: none;
+}
+
+.imm-wireframe-card.is-dragging {
+  opacity: 0.45;
+}
+
+.imm-wireframe-card--header,
+.imm-wireframe-card--footer,
+.imm-wireframe-card--navigation,
+.imm-wireframe-card--tabs,
+.imm-wireframe-card--map,
+.imm-wireframe-card--contact {
+  --imm-card-color: #1abc9c;
+}
+
+.imm-wireframe-card--form,
+.imm-wireframe-card--sign-in,
+.imm-wireframe-card--subscribe,
+.imm-wireframe-card--upload,
+.imm-wireframe-card--filter,
+.imm-wireframe-card--dropdown,
+.imm-wireframe-card--toggles {
+  --imm-card-color: #ffad42;
+}
+
+.imm-wireframe-card--cta,
+.imm-wireframe-card--features,
+.imm-wireframe-card--cards,
+.imm-wireframe-card--buttons {
+  --imm-card-color: #ef5b5b;
+}
+
+.imm-wireframe-card--divider,
+.imm-wireframe-card--footer,
+.imm-wireframe-card--loading {
+  --imm-card-color: #a855e6;
+}
+
+.imm-wireframe-card__bar {
+  align-items: center;
+  display: flex;
+  gap: 3px;
+  height: 8px;
+}
+
+.imm-wireframe-card__bar span,
+.imm-wireframe-card__preview i,
+.imm-wireframe-card__preview b,
+.imm-wireframe-card__preview small,
+.imm-wireframe-card__preview span {
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-sizing: border-box;
+  display: block;
+}
+
+.imm-wireframe-card__bar span {
+  border: 0;
+  border-radius: 999px;
+  height: 3px;
+  width: 3px;
+}
+
+.imm-wireframe-card__bar .imm-wireframe-card__remove {
+  margin-left: auto;
+}
+
+.imm-wireframe-card__title {
+  align-items: baseline;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+  padding-right: 18px;
+}
+
+.imm-wireframe-card__title strong {
+  display: block;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imm-wireframe-card__title small {
+  display: none;
+}
+
+.imm-wireframe-card__preview {
+  display: grid;
+  gap: 3px;
+}
+
+.imm-wireframe-card__preview i {
+  border: 0;
+  border-radius: 999px;
+  height: 2px;
+}
+
+.imm-wireframe-card__preview i:nth-child(2) {
+  width: 78%;
+}
+
+.imm-wireframe-card__preview i:nth-child(3) {
+  width: 58%;
+}
+
+.imm-wireframe-card__preview b {
+  border-radius: 2px;
+  height: 13px;
+}
+
+.imm-wireframe-card__preview small {
+  border: 0;
+  border-radius: 999px;
+  height: 5px;
+  width: 34%;
+}
+
+.imm-wireframe-card__preview em {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.imm-wireframe-card__preview em span {
+  border-radius: 2px;
+  height: 16px;
+}
+
+.imm-wireframe-card__actions {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+}
+
+.interactive-markdown-mindmap button.imm-wireframe-card__control,
+.imm-wireframe-card__control {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 999px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 700;
+  height: 14px;
+  justify-content: center;
+  line-height: 1;
+  min-height: 14px;
+  padding: 0;
+  width: 14px;
+}
+
+.interactive-markdown-mindmap button.imm-wireframe-card__control:hover,
+.imm-wireframe-card__control:hover {
+  background: rgba(255, 255, 255, 0.34);
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
 .interactive-markdown-mindmap--view-only:fullscreen {
   background: #ffffff;
   display: grid;

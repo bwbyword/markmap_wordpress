@@ -1,7 +1,26 @@
 (function () {
-  const DEFAULT_MARKDOWN = '# Mindmap\n\n## Homepage\n- [brick][header] Header\n- [brick][image] Hero\n\n## Contact\n- [brick][form] Contact Form\n';
+  const DEFAULT_MARKDOWN = '# Mindmap\n\n## Homepage\n- [brick][header] Header\n- [brick][hero] Hero\n- [brick][features] Services\n\n## Contact\n- [brick][form] Contact Form\n- [brick][footer] Footer\n';
   const initializedContainers = new WeakSet();
-  const BRICK_TYPES = ['image', 'text', 'video', 'form', 'list', 'header', 'footer'];
+  const BRICK_TYPES = [
+    'accordion', 'article', 'articles', 'audio', 'blog', 'buttons', 'bullets', 'cards', 'carousel', 'catalog',
+    'chart', 'checklist', 'contact', 'cta', 'divider', 'dropdown', 'faq', 'features', 'filter', 'footer',
+    'form', 'gallery', 'hamburger', 'header', 'hero', 'image', 'images', 'invoice', 'list', 'loading',
+    'map', 'media', 'messengers', 'navigation', 'pagination', 'plans', 'post-thread', 'profile', 'rating',
+    'search', 'sidebar', 'sign-in', 'slider', 'social', 'subscribe', 'table', 'tabs', 'team', 'text',
+    'timeline', 'toggles', 'upload', 'video',
+  ];
+  const BRICK_TYPE_ALIASES = {
+    button: 'buttons',
+    card: 'cards',
+    ctaimage: 'cta',
+    images: 'image',
+    img: 'image',
+    navbar: 'navigation',
+    nav: 'navigation',
+    newsletter: 'subscribe',
+    signin: 'sign-in',
+    textvideo: 'video',
+  };
 
   function ready(callback) {
     if (document.readyState === 'loading') {
@@ -139,6 +158,63 @@
     return stripMarkdown(value).replace(/\s+/g, ' ').toLowerCase();
   }
 
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function slugifyBrickType(value) {
+    const slug = stripMarkdown(value || '')
+      .toLowerCase()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return BRICK_TYPE_ALIASES[slug] || slug || 'text';
+  }
+
+  function inferBrickType(type, name) {
+    const explicitType = slugifyBrickType(type);
+
+    if (explicitType && explicitType !== 'text') {
+      return explicitType;
+    }
+
+    const normalizedName = normalizeLabel(name);
+    const tests = [
+      ['hero', /\b(hero|banner|masthead)\b/],
+      ['header', /\b(header|navigation|nav|menu|top bar)\b/],
+      ['footer', /\b(footer)\b/],
+      ['form', /\b(form|enquiry|signup|sign up|contact form)\b/],
+      ['image', /\b(image|photo|gallery|visual|map)\b/],
+      ['video', /\b(video|media|watch)\b/],
+      ['list', /\b(list|resources|positions|coverage|addresses|stats)\b/],
+      ['team', /\b(team|people|employees|leadership)\b/],
+      ['cards', /\b(cards|services|features|products|category)\b/],
+      ['faq', /\b(faq|questions)\b/],
+      ['timeline', /\b(timeline|history|story)\b/],
+      ['cta', /\b(cta|call to action|campaign)\b/],
+      ['chart', /\b(chart|data|stats|numbers)\b/],
+      ['table', /\b(table|invoice|pricing)\b/],
+      ['subscribe', /\b(subscribe|newsletter)\b/],
+    ];
+    const match = tests.find((item) => item[1].test(normalizedName));
+
+    return match ? match[0] : explicitType;
+  }
+
+  function getBrickTypeLabel(type) {
+    return slugifyBrickType(type).replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+  }
+
   function parseBrick(content) {
     let working = content.trim();
     let type = '';
@@ -152,21 +228,23 @@
 
     working = working.slice(prefix[0].length).trim();
 
-    const typePrefix = working.match(/^\[([a-z-]+)\]\s*/i);
-    if (typePrefix && BRICK_TYPES.includes(typePrefix[1].toLowerCase())) {
+    const typePrefix = working.match(/^\[([a-z0-9-]+)\]\s*/i);
+    if (typePrefix) {
       type = typePrefix[1].toLowerCase();
       working = working.slice(typePrefix[0].length).trim();
     }
 
-    const typeSuffix = working.match(/\s+\[([a-z-]+)\]\s*$/i);
-    if (typeSuffix && BRICK_TYPES.includes(typeSuffix[1].toLowerCase())) {
+    const typeSuffix = working.match(/\s+\[([a-z0-9-]+)\]\s*$/i);
+    if (typeSuffix) {
       type = typeSuffix[1].toLowerCase();
       working = working.slice(0, typeSuffix.index).trim();
     }
 
+    const name = stripMarkdown(working || 'Content Brick');
+
     return {
-      name: stripMarkdown(working || 'Content Brick'),
-      type: BRICK_TYPES.includes(type) ? type : 'text',
+      name,
+      type: inferBrickType(type, name),
     };
   }
 
@@ -193,7 +271,7 @@
   }
 
   function formatBrickLine(indent, brick) {
-    return `${' '.repeat(indent)}- ${brick.type.toUpperCase()} - ${brick.name}`;
+    return `${' '.repeat(indent)}- ${getBrickTypeLabel(brick.type).toUpperCase()} - ${brick.name}`;
   }
 
   function buildBirdseyeMarkdown(cleanLines, bricksByLabel) {
@@ -324,6 +402,153 @@
     element.appendChild(item);
   }
 
+  function getPlanBrickLabels(plan) {
+    const labels = new Set(['TODO']);
+
+    plan.bricksByLabel.forEach((group) => {
+      group.bricks.forEach((brick) => labels.add(getBrickTypeLabel(brick.type).toUpperCase()));
+    });
+
+    BRICK_TYPES.forEach((type) => labels.add(getBrickTypeLabel(type).toUpperCase()));
+
+    return [...labels].sort((a, b) => b.length - a.length).map(escapeRegExp);
+  }
+
+  function parseBrickStackText(text, plan) {
+    const labels = getPlanBrickLabels(plan);
+    const pattern = new RegExp(`-\\s*(${labels.join('|')})\\s+-\\s*`, 'gi');
+    const matches = [...String(text || '').matchAll(pattern)];
+
+    if (!matches.length) return [];
+
+    return matches.map((match, index) => {
+      const start = match.index + match[0].length;
+      const end = matches[index + 1] ? matches[index + 1].index : String(text || '').length;
+      const name = String(text || '').slice(start, end).replace(/\s+/g, ' ').trim();
+
+      return {
+        name: name || 'Content Brick',
+        type: slugifyBrickType(match[1]),
+      };
+    });
+  }
+
+  function findBrickGroupKey(plan, bricks, usedKeys) {
+    let fallbackKey = '';
+
+    plan.bricksByLabel.forEach((group, key) => {
+      if (fallbackKey || usedKeys.has(key) || group.bricks.length !== bricks.length) return;
+
+      const isMatch = group.bricks.every((brick, index) => {
+        const item = bricks[index];
+        return normalizeLabel(brick.name) === normalizeLabel(item.name)
+          && slugifyBrickType(brick.type) === slugifyBrickType(item.type);
+      });
+
+      if (isMatch) fallbackKey = key;
+    });
+
+    if (fallbackKey) {
+      usedKeys.add(fallbackKey);
+    }
+
+    return fallbackKey;
+  }
+
+  function getWireframePattern(type) {
+    const normalized = slugifyBrickType(type);
+    const gallery = '<span></span><span></span><span></span>';
+    const textLines = '<i></i><i></i><i></i>';
+
+    if (['image', 'gallery', 'images'].includes(normalized)) return `<b></b><em>${gallery}</em>`;
+    if (['hero', 'cta'].includes(normalized)) return '<b></b><i></i><i></i><small></small>';
+    if (['header', 'footer', 'navigation'].includes(normalized)) return '<i></i><i></i><i></i><small></small>';
+    if (['form', 'sign-in', 'subscribe', 'upload'].includes(normalized)) return '<i></i><i></i><b></b><small></small>';
+    if (['video', 'audio', 'media'].includes(normalized)) return '<i></i><b></b><i></i>';
+    if (['list', 'bullets', 'checklist', 'faq', 'accordion'].includes(normalized)) return `${textLines}<i></i>`;
+    if (['cards', 'features', 'team', 'catalog', 'plans', 'articles'].includes(normalized)) return `<em>${gallery}</em><i></i><i></i>`;
+    if (['table', 'invoice'].includes(normalized)) return '<b></b><b></b><b></b><i></i><i></i>';
+    if (['map', 'contact'].includes(normalized)) return '<b></b><em><span></span><span></span></em><i></i>';
+    if (['slider', 'carousel'].includes(normalized)) return '<b></b><i></i><small></small>';
+    if (['chart', 'timeline', 'steps'].includes(normalized)) return '<b></b><i></i><i></i><i></i>';
+    if (['divider', 'loading'].includes(normalized)) return '<i></i>';
+
+    return textLines;
+  }
+
+  function renderBrickCard(brick, parentKey, index) {
+    const type = slugifyBrickType(brick.type);
+    const typeLabel = getBrickTypeLabel(type);
+
+    return `
+      <div class="imm-wireframe-card imm-wireframe-card--${escapeHtml(type)}" draggable="true" data-parent-key="${escapeHtml(parentKey)}" data-index="${index}" data-name="${escapeHtml(brick.name)}" data-type="${escapeHtml(type)}">
+        <div class="imm-wireframe-card__bar" aria-hidden="true">
+          <span></span><span></span><span></span>
+          <button type="button" class="imm-wireframe-card__control imm-wireframe-card__remove" aria-label="Remove ${escapeHtml(brick.name)}">×</button>
+        </div>
+        <div class="imm-wireframe-card__title">
+          <strong>${escapeHtml(brick.name)}</strong>
+          <small>${escapeHtml(typeLabel)}</small>
+        </div>
+        <div class="imm-wireframe-card__preview" aria-hidden="true">${getWireframePattern(type)}</div>
+        <div class="imm-wireframe-card__actions">
+          <button type="button" class="imm-wireframe-card__control imm-wireframe-card__up" aria-label="Move ${escapeHtml(brick.name)} up">↑</button>
+          <button type="button" class="imm-wireframe-card__control imm-wireframe-card__down" aria-label="Move ${escapeHtml(brick.name)} down">↓</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderBrickStacks(container, plan) {
+    if (!plan.birdseye) return;
+
+    const usedKeys = new Set();
+
+    container.querySelectorAll('.markmap-foreign > div > div').forEach((nodeContent) => {
+      if (nodeContent.querySelector('.imm-brick-stack')) return;
+
+      const bricks = parseBrickStackText(nodeContent.textContent || '', plan);
+      if (!bricks.length) return;
+
+      const parentKey = findBrickGroupKey(plan, bricks, usedKeys);
+      if (!parentKey) return;
+
+      nodeContent.innerHTML = `
+        <div class="imm-brick-stack" data-parent-key="${escapeHtml(parentKey)}">
+          ${bricks.map((brick, index) => renderBrickCard(brick, parentKey, index)).join('')}
+        </div>
+      `;
+    });
+  }
+
+  function resizeBrickStackNodes(container) {
+    let resized = false;
+
+    container.querySelectorAll('.imm-brick-stack').forEach((stack) => {
+      const nodeElement = stack.closest('g.markmap-node');
+      const foreignObject = stack.closest('foreignObject');
+      const node = nodeElement && nodeElement.__data__;
+
+      if (!node || !node.state || !node.state.horizontalRect || !foreignObject) return;
+
+      const paddingX = 18;
+      const nextWidth = Math.max(node.state.horizontalRect.width, stack.scrollWidth + paddingX);
+      const nextHeight = Math.max(node.state.horizontalRect.height, stack.scrollHeight + 8);
+
+      if (Math.abs(nextWidth - node.state.horizontalRect.width) > 1 || Math.abs(nextHeight - node.state.horizontalRect.height) > 1) {
+        node.state.horizontalRect.width = nextWidth;
+        node.state.horizontalRect.height = nextHeight;
+        node.state.rect.width = nextWidth;
+        node.state.rect.height = nextHeight;
+        foreignObject.setAttribute('width', String(nextWidth));
+        foreignObject.setAttribute('height', String(nextHeight));
+        resized = true;
+      }
+    });
+
+    return resized;
+  }
+
   function decorateMindmap(container, plan) {
     const svg = container.querySelector('.interactive-markdown-mindmap__svg');
     if (!svg) return;
@@ -355,6 +580,8 @@
         appendDecoration(text, brickGroup && brickGroup.bricks.length ? 'mainpage ready' : 'start here', 'interactive-markdown-mindmap__prompt');
       }
     });
+
+    renderBrickStacks(container, plan);
 
     if (plan.planning === 'mainpage-first') {
       const rootBricks = plan.bricksByLabel.get(rootKey);
@@ -705,6 +932,10 @@
     applyLayout(container);
     decorateMindmap(container, plan);
 
+    if (resizeBrickStackNodes(container)) {
+      applyLayout(container);
+    }
+
     if (shouldFit !== false) {
       return Promise.resolve(instance.fit()).then(() => {
         restoreVerticalSvgVisibility(container);
@@ -792,6 +1023,212 @@
     }
   }
 
+  function getEditableMarkdown(container, textarea, embeddedMarkdown) {
+    if (textarea) return textarea.value;
+
+    return getEmbeddedMarkdown(container) || embeddedMarkdown || DEFAULT_MARKDOWN;
+  }
+
+  function serializeBrickLine(indent, brick) {
+    return `${' '.repeat(indent)}- [brick][${slugifyBrickType(brick.type)}] ${brick.name}`;
+  }
+
+  function rewriteMarkdownBrickGroup(markdown, parentKey, nextBricks) {
+    const lines = (markdown || DEFAULT_MARKDOWN).split(/\n/);
+    const stack = {};
+    const output = [];
+    let lastContentLabel = '';
+    let rootLabel = '';
+    let inserted = false;
+    let sourceIndent = 0;
+
+    lines.forEach((line) => {
+      const heading = line.match(/^\s{0,3}(#{1,6})\s+(.+)$/);
+      if (heading) {
+        const indent = (heading[1].length - 1) * 2;
+        const label = stripMarkdown(heading[2]);
+        stack[indent] = label;
+        lastContentLabel = label;
+        Object.keys(stack).map(Number).filter((key) => key > indent).forEach((key) => delete stack[key]);
+        if (!rootLabel) rootLabel = label;
+        output.push(line);
+        return;
+      }
+
+      const list = line.match(/^(\s*)([-*+])\s+(.+)$/);
+      if (!list) {
+        output.push(line);
+        return;
+      }
+
+      const indent = list[1].replace(/\t/g, '  ').length;
+      const brick = parseBrick(list[3]);
+
+      if (!brick) {
+        const label = stripMarkdown(list[3]);
+        stack[indent] = label;
+        lastContentLabel = label;
+        Object.keys(stack).map(Number).filter((key) => key > indent).forEach((key) => delete stack[key]);
+        if (!rootLabel) rootLabel = label;
+        output.push(line);
+        return;
+      }
+
+      const currentParent = lastContentLabel || getNearestParent(stack, indent) || rootLabel || 'Mindmap';
+
+      if (normalizeLabel(currentParent) !== parentKey) {
+        output.push(line);
+        return;
+      }
+
+      sourceIndent = sourceIndent || indent;
+
+      if (!inserted) {
+        nextBricks.forEach((item) => output.push(serializeBrickLine(sourceIndent, item)));
+        inserted = true;
+      }
+    });
+
+    return output.join('\n');
+  }
+
+  function getStackBricks(stack) {
+    return [...stack.querySelectorAll('.imm-wireframe-card')].map((card) => ({
+      name: card.getAttribute('data-name') || card.querySelector('strong')?.textContent || 'Content Brick',
+      type: card.getAttribute('data-type') || 'text',
+    }));
+  }
+
+  function updateBrickStackMarkdown(container, textarea, embeddedMarkdown, stack, nextBricks) {
+    const parentKey = stack.getAttribute('data-parent-key');
+    if (!parentKey) return;
+
+    const nextMarkdown = rewriteMarkdownBrickGroup(getEditableMarkdown(container, textarea, embeddedMarkdown), parentKey, nextBricks);
+    const source = container.querySelector('.interactive-markdown-mindmap__source');
+
+    if (textarea) {
+      textarea.value = nextMarkdown;
+    }
+
+    if (source) {
+      source.textContent = JSON.stringify(nextMarkdown);
+    }
+
+    renderMarkdown(container, nextMarkdown, true);
+  }
+
+  function moveBrickCard(container, textarea, embeddedMarkdown, card, direction) {
+    const stack = card.closest('.imm-brick-stack');
+    if (!stack) return;
+
+    const cards = [...stack.querySelectorAll('.imm-wireframe-card')];
+    const index = cards.indexOf(card);
+    const targetIndex = index + direction;
+
+    if (targetIndex < 0 || targetIndex >= cards.length) return;
+
+    const bricks = getStackBricks(stack);
+    const moved = bricks.splice(index, 1)[0];
+    bricks.splice(targetIndex, 0, moved);
+    updateBrickStackMarkdown(container, textarea, embeddedMarkdown, stack, bricks);
+  }
+
+  function removeBrickCard(container, textarea, embeddedMarkdown, card) {
+    const stack = card.closest('.imm-brick-stack');
+    if (!stack) return;
+
+    const bricks = getStackBricks(stack).filter((_, index) => index !== [...stack.querySelectorAll('.imm-wireframe-card')].indexOf(card));
+    updateBrickStackMarkdown(container, textarea, embeddedMarkdown, stack, bricks);
+  }
+
+  function reorderDraggedBrick(container, textarea, embeddedMarkdown, draggedCard, targetCard) {
+    if (!draggedCard || !targetCard || draggedCard === targetCard) return;
+
+    const sourceStack = draggedCard.closest('.imm-brick-stack');
+    const targetStack = targetCard.closest('.imm-brick-stack');
+
+    if (!sourceStack || sourceStack !== targetStack) return;
+
+    const cards = [...sourceStack.querySelectorAll('.imm-wireframe-card')];
+    const sourceIndex = cards.indexOf(draggedCard);
+    const targetIndex = cards.indexOf(targetCard);
+    const bricks = getStackBricks(sourceStack);
+    const moved = bricks.splice(sourceIndex, 1)[0];
+
+    bricks.splice(targetIndex, 0, moved);
+    updateBrickStackMarkdown(container, textarea, embeddedMarkdown, sourceStack, bricks);
+  }
+
+  function bindBrickStackInteractions(container, textarea, embeddedMarkdown) {
+    container.addEventListener('pointerdown', (event) => {
+      if (event.target instanceof Element && event.target.closest('.imm-wireframe-card')) {
+        event.stopPropagation();
+      }
+    }, true);
+
+    container.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const card = target.closest('.imm-wireframe-card');
+      if (!card) return;
+
+      if (target.closest('.imm-wireframe-card__up')) {
+        event.preventDefault();
+        event.stopPropagation();
+        moveBrickCard(container, textarea, embeddedMarkdown, card, -1);
+      } else if (target.closest('.imm-wireframe-card__down')) {
+        event.preventDefault();
+        event.stopPropagation();
+        moveBrickCard(container, textarea, embeddedMarkdown, card, 1);
+      } else if (target.closest('.imm-wireframe-card__remove')) {
+        event.preventDefault();
+        event.stopPropagation();
+        removeBrickCard(container, textarea, embeddedMarkdown, card);
+      }
+    });
+
+    container.addEventListener('dragstart', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const card = target.closest('.imm-wireframe-card');
+      if (!card) return;
+
+      container.draggedBrickCard = card;
+      card.classList.add('is-dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', card.getAttribute('data-index') || '0');
+    });
+
+    container.addEventListener('dragover', (event) => {
+      if (!(event.target instanceof Element) || !event.target.closest('.imm-wireframe-card')) return;
+
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+    });
+
+    container.addEventListener('drop', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const targetCard = target.closest('.imm-wireframe-card');
+      if (!targetCard) return;
+
+      event.preventDefault();
+      reorderDraggedBrick(container, textarea, embeddedMarkdown, container.draggedBrickCard, targetCard);
+      container.draggedBrickCard = null;
+    });
+
+    container.addEventListener('dragend', () => {
+      if (container.draggedBrickCard) {
+        container.draggedBrickCard.classList.remove('is-dragging');
+      }
+
+      container.draggedBrickCard = null;
+    });
+  }
+
   async function renderSitemap(container) {
     setStatus(container, 'Generating sitemap...');
     const url = new URL(window.InteractiveMarkdownMindmap.restUrl);
@@ -826,6 +1263,7 @@
     activatePlanning(container, getPlanningMode(container));
     activateBirdseye(container, isBirdseye(container));
     activateLayout(container, getLayout(container));
+    bindBrickStackInteractions(container, textarea, embeddedMarkdown);
 
     container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
       button.addEventListener('click', async () => {
