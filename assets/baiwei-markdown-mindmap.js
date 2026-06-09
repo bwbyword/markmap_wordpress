@@ -31,7 +31,7 @@
   }
 
   function setStatus(container, message, isError) {
-    const status = container.querySelector('.interactive-markdown-mindmap__status');
+    const status = container.querySelector('.baiwei-markdown-mindmap__status');
 
     if (!status) return;
 
@@ -101,21 +101,21 @@
 
   function activateMode(container, mode) {
     container.setAttribute('data-mode', mode);
-    container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__mode').forEach((button) => {
       button.classList.toggle('is-active', button.getAttribute('data-mode') === mode);
     });
   }
 
   function activatePlanning(container, planningMode) {
     container.setAttribute('data-planning-mode', planningMode);
-    container.querySelectorAll('.interactive-markdown-mindmap__planning').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__planning').forEach((button) => {
       button.classList.toggle('is-active', button.getAttribute('data-planning-mode') === planningMode);
     });
   }
 
   function activateBirdseye(container, enabled) {
     container.setAttribute('data-birdseye', enabled ? 'true' : 'false');
-    container.querySelectorAll('.interactive-markdown-mindmap__birdseye').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__birdseye').forEach((button) => {
       button.classList.toggle('is-active', enabled);
       button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     });
@@ -125,9 +125,9 @@
     const nextLayout = layout === 'vertical' ? 'vertical' : 'horizontal';
     container.setAttribute('data-layout', nextLayout);
 
-    container.querySelectorAll('.interactive-markdown-mindmap__layout').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__layout').forEach((button) => {
       const buttonLayout = button.getAttribute('data-layout');
-      const isToggleOnly = button.classList.contains('interactive-markdown-mindmap__icon-button');
+      const isToggleOnly = button.classList.contains('baiwei-markdown-mindmap__icon-button');
 
       if (isToggleOnly) {
         button.setAttribute('data-layout', nextLayout === 'vertical' ? 'horizontal' : 'vertical');
@@ -142,9 +142,9 @@
     const nextStyle = style === 'text' ? 'text' : 'wireframe';
     container.setAttribute('data-brick-style', nextStyle);
 
-    container.querySelectorAll('.interactive-markdown-mindmap__brick-style').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__brick-style').forEach((button) => {
       const buttonStyle = button.getAttribute('data-brick-style');
-      const isToggleOnly = button.classList.contains('interactive-markdown-mindmap__icon-button');
+      const isToggleOnly = button.classList.contains('baiwei-markdown-mindmap__icon-button');
 
       if (isToggleOnly) {
         button.setAttribute('data-brick-style', nextStyle === 'wireframe' ? 'text' : 'wireframe');
@@ -158,7 +158,7 @@
   }
 
   function getEmbeddedMarkdown(container) {
-    const source = container.querySelector('.interactive-markdown-mindmap__source');
+    const source = container.querySelector('.baiwei-markdown-mindmap__source');
 
     if (!source) return '';
 
@@ -403,9 +403,9 @@
   }
 
   function removeDecorations(svg) {
-    svg.querySelectorAll('.interactive-markdown-mindmap__badge, .interactive-markdown-mindmap__prompt').forEach((node) => node.remove());
-    svg.querySelectorAll('.interactive-markdown-mindmap__mainpage-node').forEach((node) => {
-      node.classList.remove('interactive-markdown-mindmap__mainpage-node');
+    svg.querySelectorAll('.baiwei-markdown-mindmap__badge, .baiwei-markdown-mindmap__prompt').forEach((node) => node.remove());
+    svg.querySelectorAll('.baiwei-markdown-mindmap__mainpage-node').forEach((node) => {
+      node.classList.remove('baiwei-markdown-mindmap__mainpage-node');
     });
   }
 
@@ -638,7 +638,7 @@
   }
 
   function decorateMindmap(container, plan) {
-    const svg = container.querySelector('.interactive-markdown-mindmap__svg');
+    const svg = container.querySelector('.baiwei-markdown-mindmap__svg');
     if (!svg) return;
 
     removeDecorations(svg);
@@ -654,18 +654,18 @@
       const brickGroup = plan.bricksByLabel.get(label);
 
       if (brickGroup && brickGroup.bricks.length && !plan.birdseye) {
-        appendDecoration(text, `${brickGroup.bricks.length} bricks`, 'interactive-markdown-mindmap__badge');
+        appendDecoration(text, `${brickGroup.bricks.length} bricks`, 'baiwei-markdown-mindmap__badge');
       }
 
       if (plan.birdseye && !plan.hasBricks && label) {
-        appendDecoration(text, 'No bricks yet', 'interactive-markdown-mindmap__badge');
+        appendDecoration(text, 'No bricks yet', 'baiwei-markdown-mindmap__badge');
       }
 
       if (plan.planning === 'mainpage-first' && (label === rootKey || (!rootKey && index === 0))) {
         const node = text.closest('g');
-        if (node) node.classList.add('interactive-markdown-mindmap__mainpage-node');
+        if (node) node.classList.add('baiwei-markdown-mindmap__mainpage-node');
 
-        appendDecoration(text, brickGroup && brickGroup.bricks.length ? 'mainpage ready' : 'start here', 'interactive-markdown-mindmap__prompt');
+        appendDecoration(text, brickGroup && brickGroup.bricks.length ? 'mainpage ready' : 'start here', 'baiwei-markdown-mindmap__prompt');
       }
     });
 
@@ -854,7 +854,7 @@
     });
 
     if (layout === 'vertical' && instance.state.data && instance.state.data.state) {
-      const svg = container && container.querySelector('.interactive-markdown-mindmap__svg');
+      const svg = container && container.querySelector('.baiwei-markdown-mindmap__svg');
       const viewportWidth = svg && svg.clientWidth ? svg.clientWidth : 1200;
       const maxRowWidth = Math.max(1800, Math.min(3200, viewportWidth * 1.8));
 
@@ -1063,7 +1063,7 @@
   }
 
   function renderMarkdown(container, markdown, shouldFit) {
-    const svg = container.querySelector('.interactive-markdown-mindmap__svg');
+    const svg = container.querySelector('.baiwei-markdown-mindmap__svg');
     const transformer = getTransformer();
     const plan = parseContentPlan(markdown || DEFAULT_MARKDOWN, container);
     const layout = getLayout(container);
@@ -1200,7 +1200,7 @@
     if (!parentKey) return;
 
     const nextMarkdown = rewriteMarkdownBrickGroup(getEditableMarkdown(container, textarea, embeddedMarkdown), parentKey, nextBricks);
-    const source = container.querySelector('.interactive-markdown-mindmap__source');
+    const source = container.querySelector('.baiwei-markdown-mindmap__source');
 
     if (textarea) {
       textarea.value = nextMarkdown;
@@ -1326,7 +1326,7 @@
   }
 
   function observeBrickStackRestores(container) {
-    const svg = container.querySelector('.interactive-markdown-mindmap__svg');
+    const svg = container.querySelector('.baiwei-markdown-mindmap__svg');
     if (!svg || container.brickStackObserver) return;
 
     container.brickStackObserver = new MutationObserver(() => {
@@ -1352,12 +1352,12 @@
 
   async function renderSitemap(container) {
     setStatus(container, 'Generating sitemap...');
-    const url = new URL(window.InteractiveMarkdownMindmap.restUrl);
+    const url = new URL(window.BaiweiMarkdownMindmap.restUrl);
     url.searchParams.set('types', getTypes(container));
 
     const response = await fetch(url.toString(), {
       headers: {
-        'X-WP-Nonce': window.InteractiveMarkdownMindmap.nonce,
+        'X-WP-Nonce': window.BaiweiMarkdownMindmap.nonce,
       },
     });
 
@@ -1388,7 +1388,7 @@
     bindBrickStackInteractions(container, textarea, embeddedMarkdown);
     observeBrickStackRestores(container);
 
-    container.querySelectorAll('.interactive-markdown-mindmap__mode').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__mode').forEach((button) => {
       button.addEventListener('click', async () => {
         const mode = button.getAttribute('data-mode');
         activateMode(container, mode);
@@ -1406,14 +1406,14 @@
       });
     });
 
-    container.querySelectorAll('.interactive-markdown-mindmap__planning').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__planning').forEach((button) => {
       button.addEventListener('click', () => {
         activatePlanning(container, button.getAttribute('data-planning-mode') || 'structure-first');
         renderMarkdown(container, textarea ? textarea.value : embeddedMarkdown, true);
       });
     });
 
-    container.querySelectorAll('.interactive-markdown-mindmap__birdseye').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__birdseye').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
         activateBirdseye(container, !isBirdseye(container));
@@ -1425,7 +1425,7 @@
       });
     });
 
-    container.querySelectorAll('.interactive-markdown-mindmap__layout').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__layout').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
         const nextLayout = button.getAttribute('data-layout') || 'horizontal';
@@ -1443,7 +1443,7 @@
       });
     });
 
-    container.querySelectorAll('.interactive-markdown-mindmap__brick-style').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__brick-style').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
         const nextStyle = button.getAttribute('data-brick-style') || 'wireframe';
@@ -1457,7 +1457,7 @@
       });
     });
 
-    const svg = container.querySelector('.interactive-markdown-mindmap__svg');
+    const svg = container.querySelector('.baiwei-markdown-mindmap__svg');
     if (svg) {
       svg.addEventListener('click', (event) => {
         const target = event.target;
@@ -1494,7 +1494,7 @@
       });
     }
 
-    container.querySelectorAll('.interactive-markdown-mindmap__fit').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__fit').forEach((button) => {
       button.addEventListener('click', () => {
         if (container.markmapInstance) {
           container.markmapInstance.fit();
@@ -1502,7 +1502,7 @@
       });
     });
 
-    container.querySelectorAll('.interactive-markdown-mindmap__zoom-out').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__zoom-out').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
         zoomMindmap(container, 1 / 1.2).catch((error) => {
@@ -1511,7 +1511,7 @@
       });
     });
 
-    container.querySelectorAll('.interactive-markdown-mindmap__zoom-in').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__zoom-in').forEach((button) => {
       button.addEventListener('click', (event) => {
         event.preventDefault();
         zoomMindmap(container, 1.2).catch((error) => {
@@ -1520,7 +1520,7 @@
       });
     });
 
-    container.querySelectorAll('.interactive-markdown-mindmap__fullscreen').forEach((button) => {
+    container.querySelectorAll('.baiwei-markdown-mindmap__fullscreen').forEach((button) => {
       button.addEventListener('click', async () => {
         try {
           if (document.fullscreenElement === container) {
@@ -1556,12 +1556,12 @@
     const scope = root || document;
     const containers = [];
 
-    if (scope.matches && scope.matches('.interactive-markdown-mindmap')) {
+    if (scope.matches && scope.matches('.baiwei-markdown-mindmap')) {
       containers.push(scope);
     }
 
     if (scope.querySelectorAll) {
-      containers.push(...scope.querySelectorAll('.interactive-markdown-mindmap'));
+      containers.push(...scope.querySelectorAll('.baiwei-markdown-mindmap'));
     }
 
     containers.forEach(initialize);
@@ -1584,7 +1584,7 @@
     const bind = () => {
       if (!window.elementorFrontend || !window.elementorFrontend.hooks) return;
 
-      window.elementorFrontend.hooks.addAction('frontend/element_ready/interactive_markdown_mindmap.default', ($scope) => {
+      window.elementorFrontend.hooks.addAction('frontend/element_ready/baiwei_markdown_mindmap.default', ($scope) => {
         initializeAll($scope && $scope[0] ? $scope[0] : document);
       });
 

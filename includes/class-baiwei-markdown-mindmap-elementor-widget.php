@@ -1,21 +1,21 @@
 <?php
 /**
- * Elementor widget for Interactive Markdown Mindmap.
+ * Elementor widget for Baiwei Markdown Mindmap.
  *
- * @package InteractiveMarkdownMindmap
+ * @package BaiweiMarkdownMindmap
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Widget_Base {
+final class Baiwei_Markdown_Mindmap_Elementor_Widget extends \Elementor\Widget_Base {
     public function get_name(): string {
-        return 'interactive_markdown_mindmap';
+        return 'baiwei_markdown_mindmap';
     }
 
     public function get_title(): string {
-        return __('Interactive Markdown Mindmap', 'interactive-markdown-mindmap');
+        return __('Baiwei Markdown Mindmap', 'baiwei-markdown-mindmap');
     }
 
     public function get_icon(): string {
@@ -23,7 +23,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
     }
 
     public function get_categories(): array {
-        return ['interactive-markdown-mindmap', 'general'];
+        return ['baiwei-markdown-mindmap', 'general'];
     }
 
     public function get_keywords(): array {
@@ -31,18 +31,18 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
     }
 
     public function get_script_depends(): array {
-        return ['interactive-markdown-mindmap'];
+        return ['baiwei-markdown-mindmap'];
     }
 
     public function get_style_depends(): array {
-        return ['interactive-markdown-mindmap'];
+        return ['baiwei-markdown-mindmap'];
     }
 
     protected function register_controls(): void {
         $this->start_controls_section(
             'section_content',
             [
-                'label' => __('Mindmap Content', 'interactive-markdown-mindmap'),
+                'label' => __('Mindmap Content', 'baiwei-markdown-mindmap'),
                 'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
             ]
         );
@@ -50,12 +50,12 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'mode',
             [
-                'label' => __('Source', 'interactive-markdown-mindmap'),
+                'label' => __('Source', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::SELECT,
                 'default' => 'markdown',
                 'options' => [
-                    'markdown' => __('Markdown', 'interactive-markdown-mindmap'),
-                    'sitemap' => __('Visual Site Map', 'interactive-markdown-mindmap'),
+                    'markdown' => __('Markdown', 'baiwei-markdown-mindmap'),
+                    'sitemap' => __('Visual Site Map', 'baiwei-markdown-mindmap'),
                 ],
             ]
         );
@@ -63,7 +63,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'markdown',
             [
-                'label' => __('Markdown', 'interactive-markdown-mindmap'),
+                'label' => __('Markdown', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::TEXTAREA,
                 'default' => "# Website Plan\n\n## Homepage\n- [brick][header] Header\n- [brick][hero] Hero\n- [brick][features] Services\n- [brick][text] About\n\n## Contact\n- [brick][form] Contact Form\n- [brick][footer] Footer",
                 'rows' => 14,
@@ -76,7 +76,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'types',
             [
-                'label' => __('Post Types', 'interactive-markdown-mindmap'),
+                'label' => __('Post Types', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::TEXT,
                 'default' => 'page,post',
                 'condition' => [
@@ -88,12 +88,12 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'planning',
             [
-                'label' => __('Planning Mode', 'interactive-markdown-mindmap'),
+                'label' => __('Planning Mode', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::SELECT,
                 'default' => 'structure-first',
                 'options' => [
-                    'structure-first' => __('Structure First', 'interactive-markdown-mindmap'),
-                    'mainpage-first' => __('Mainpage First', 'interactive-markdown-mindmap'),
+                    'structure-first' => __('Structure First', 'baiwei-markdown-mindmap'),
+                    'mainpage-first' => __('Mainpage First', 'baiwei-markdown-mindmap'),
                 ],
             ]
         );
@@ -101,10 +101,10 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'birdseye',
             [
-                'label' => __('Bird\'s Eye View', 'interactive-markdown-mindmap'),
+                'label' => __('Bird\'s Eye View', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::SWITCHER,
-                'label_on' => __('Show', 'interactive-markdown-mindmap'),
-                'label_off' => __('Hide', 'interactive-markdown-mindmap'),
+                'label_on' => __('Show', 'baiwei-markdown-mindmap'),
+                'label_off' => __('Hide', 'baiwei-markdown-mindmap'),
                 'return_value' => 'true',
                 'default' => '',
             ]
@@ -113,7 +113,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'height',
             [
-                'label' => __('Canvas Height', 'interactive-markdown-mindmap'),
+                'label' => __('Canvas Height', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::TEXT,
                 'default' => '640px',
                 'placeholder' => '640px',
@@ -123,33 +123,33 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $this->add_control(
             'layout',
             [
-                'label' => __('Default View', 'interactive-markdown-mindmap'),
+                'label' => __('Default View', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::CHOOSE,
                 'default' => 'horizontal',
                 'options' => [
                     'horizontal' => [
-                        'title' => __('Horizontal', 'interactive-markdown-mindmap'),
+                        'title' => __('Horizontal', 'baiwei-markdown-mindmap'),
                         'icon' => 'eicon-h-align-left',
                     ],
                     'vertical' => [
-                        'title' => __('Vertical', 'interactive-markdown-mindmap'),
+                        'title' => __('Vertical', 'baiwei-markdown-mindmap'),
                         'icon' => 'eicon-v-align-top',
                     ],
                 ],
                 'toggle' => false,
-                'description' => __('Choose how the mindmap loads before visitors use the view toggle.', 'interactive-markdown-mindmap'),
+                'description' => __('Choose how the mindmap loads before visitors use the view toggle.', 'baiwei-markdown-mindmap'),
             ]
         );
 
         $this->add_control(
             'brick_style',
             [
-                'label' => __('Content Brick Style', 'interactive-markdown-mindmap'),
+                'label' => __('Content Brick Style', 'baiwei-markdown-mindmap'),
                 'type' => \Elementor\Controls_Manager::SELECT,
                 'default' => 'wireframe',
                 'options' => [
-                    'wireframe' => __('Wireframe Cards', 'interactive-markdown-mindmap'),
-                    'text' => __('Text List', 'interactive-markdown-mindmap'),
+                    'wireframe' => __('Wireframe Cards', 'baiwei-markdown-mindmap'),
+                    'text' => __('Text List', 'baiwei-markdown-mindmap'),
                 ],
             ]
         );
@@ -162,7 +162,7 @@ final class Interactive_Markdown_Mindmap_Elementor_Widget extends \Elementor\Wid
         $mode = isset($settings['mode']) && $settings['mode'] === 'sitemap' ? 'sitemap' : 'markdown';
         $markdown = isset($settings['markdown']) ? (string) $settings['markdown'] : '';
 
-        $mindmap_html = Interactive_Markdown_Mindmap_Plugin::instance()->render_mindmap(
+        $mindmap_html = Baiwei_Markdown_Mindmap_Plugin::instance()->render_mindmap(
             [
                 'mode' => $mode,
                 'height' => isset($settings['height']) ? (string) $settings['height'] : '640px',

@@ -1,15 +1,15 @@
-![Interactive Markdown Mindmap banner](banner.png)
+![Baiwei Markdown Mindmap banner](banner.png)
 
-# Interactive Markdown Mindmap
+# Baiwei Markdown Mindmap
 
-Interactive Markdown Mindmap is a standalone WordPress plugin that renders Markdown as interactive Markmap mindmaps, or generates a visual sitemap from published WordPress content.
+Baiwei Markdown Mindmap is a standalone WordPress plugin that renders Markdown as interactive mindmaps, or generates a visual sitemap from published WordPress content.
 
 This project uses the upstream [Markmap](https://github.com/markmap/markmap) browser libraries, but the repository itself is intentionally shaped as a WordPress plugin rather than a fork of the full Markmap monorepo.
 
 ## Features
 
 - Native drag-and-drop Elementor widget with a Markdown editing box in the Elementor Content panel.
-- `[interactive_markdown_mindmap]` shortcode for pages, posts, and Elementor Shortcode widgets.
+- `[baiwei_markdown_mindmap]` shortcode for pages, posts, and Elementor Shortcode widgets.
 - Markdown mode with an editor and `.md` file upload.
 - Read-only Markdown embeds using enclosing shortcode content.
 - Sitemap mode for generating a visual mindmap from published WordPress content.
@@ -30,34 +30,34 @@ This project uses the upstream [Markmap](https://github.com/markmap/markmap) bro
 Copy this repository folder into WordPress:
 
 ```text
-wp-content/plugins/interactive-markdown-mindmap
+wp-content/plugins/baiwei-markdown-mindmap
 ```
 
-Then activate **Interactive Markdown Mindmap** in WordPress Admin > Plugins.
+Then activate **Baiwei Markdown Mindmap** in WordPress Admin > Plugins.
 
 The main plugin file must be directly inside the plugin folder:
 
 ```text
-wp-content/plugins/interactive-markdown-mindmap/interactive-markdown-mindmap.php
+wp-content/plugins/baiwei-markdown-mindmap/baiwei-markdown-mindmap.php
 ```
 
 If the files are nested one level deeper, WordPress will not show the plugin in the Plugins list.
 
-After activation, open **Settings > Interactive Markdown Mindmap** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
+After activation, open **Settings > Baiwei Markdown Mindmap** for usage examples, Elementor notes, troubleshooting, and standalone plugin notes.
 
 ## Basic Usage
 
 Add the shortcode to any WordPress page or post:
 
 ```text
-[interactive_markdown_mindmap]
+[baiwei_markdown_mindmap]
 ```
 
 This displays the interactive Markdown editor, file upload control, and mindmap canvas.
 
 ## Elementor Widget
 
-In Elementor, drag **Interactive Markdown Mindmap** into the layout. Edit Markdown directly in the widget's Content panel, set the canvas height, or switch the source to Visual Site Map to generate a mindmap from public content types.
+In Elementor, drag **Baiwei Markdown Mindmap** into the layout. Edit Markdown directly in the widget's Content panel, set the canvas height, or switch the source to Visual Site Map to generate a mindmap from public content types.
 
 Use the Layout control to choose the default horizontal or vertical mindmap view.
 
@@ -66,7 +66,7 @@ Use the Layout control to choose the default horizontal or vertical mindmap view
 Place Markdown between the opening and closing shortcode tags:
 
 ```text
-[interactive_markdown_mindmap mode="markdown" height="70vh"]
+[baiwei_markdown_mindmap mode="markdown" height="70vh"]
 # Product Plan
 
 ## Discovery
@@ -76,7 +76,7 @@ Place Markdown between the opening and closing shortcode tags:
 ## Build
 - Prototype
 - Launch
-[/interactive_markdown_mindmap]
+[/baiwei_markdown_mindmap]
 ```
 
 When Markdown is supplied this way, the plugin renders only the visual mindmap canvas with subtle zoom, fit, and fullscreen controls at the bottom.
@@ -86,13 +86,13 @@ When Markdown is supplied this way, the plugin renders only the visual mindmap c
 Generate a mindmap from published WordPress content:
 
 ```text
-[interactive_markdown_mindmap mode="sitemap" height="70vh" types="page,post"]
+[baiwei_markdown_mindmap mode="sitemap" height="70vh" types="page,post"]
 ```
 
 The `types` option accepts comma-separated public post types, such as:
 
 ```text
-[interactive_markdown_mindmap mode="sitemap" types="page,post,product"]
+[baiwei_markdown_mindmap mode="sitemap" types="page,post,product"]
 ```
 
 ## Content Bricks
@@ -120,7 +120,7 @@ In Bird's Eye View, users can drag content bricks within the same page stack, us
 Use the brick-style toggle or shortcode option to switch between the wireframe cards and the original text list:
 
 ```text
-[interactive_markdown_mindmap mode="markdown" birdseye="true" brick_style="text"]
+[baiwei_markdown_mindmap mode="markdown" birdseye="true" brick_style="text"]
 ```
 
 Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `[text]`, `[video]`, `[list]`, `[features]`, `[cards]`, `[form]`, `[map]`, `[table]`, `[chart]`, `[faq]`, `[accordion]`, `[cta]`, `[subscribe]`, `[footer]`, and other custom tags. Unknown tags fall back to a generic text wireframe.
@@ -139,7 +139,7 @@ Supported brick type tags include `[header]`, `[hero]`, `[image]`, `[slider]`, `
 
 ## Repository Structure
 
-- `interactive-markdown-mindmap.php`: main WordPress plugin file.
+- `baiwei-markdown-mindmap.php`: main WordPress plugin file.
 - `assets/`: plugin CSS, JavaScript, and bundled browser builds.
 - `licenses/`: third-party license texts.
 - `readme.txt`: WordPress.org plugin readme.
@@ -165,6 +165,6 @@ For general Markmap documentation, visit:
 
 ## License
 
-Interactive Markdown Mindmap is licensed as GPLv2 or later.
+Baiwei Markdown Mindmap is licensed as GPLv2 or later.
 
 Bundled Markmap packages are MIT licensed, and D3 is ISC licensed. See [`licenses/THIRD-PARTY-NOTICES.txt`](./licenses/THIRD-PARTY-NOTICES.txt) for details.

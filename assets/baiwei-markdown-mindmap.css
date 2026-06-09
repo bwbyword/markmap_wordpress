@@ -1,11 +1,11 @@
-.interactive-markdown-mindmap {
-  --interactive-markdown-mindmap-border: #d7dee8;
-  --interactive-markdown-mindmap-bg: #ffffff;
-  --interactive-markdown-mindmap-muted: #586579;
-  --interactive-markdown-mindmap-accent: #146c5f;
-  --interactive-markdown-mindmap-panel: #f6f8fb;
-  background: var(--interactive-markdown-mindmap-bg);
-  border: 1px solid var(--interactive-markdown-mindmap-border);
+.baiwei-markdown-mindmap {
+  --baiwei-markdown-mindmap-border: #d7dee8;
+  --baiwei-markdown-mindmap-bg: #ffffff;
+  --baiwei-markdown-mindmap-muted: #586579;
+  --baiwei-markdown-mindmap-accent: #146c5f;
+  --baiwei-markdown-mindmap-panel: #f6f8fb;
+  background: var(--baiwei-markdown-mindmap-bg);
+  border: 1px solid var(--baiwei-markdown-mindmap-border);
   border-radius: 8px;
   color: #18202c;
   display: grid;
@@ -14,21 +14,21 @@
   position: relative;
 }
 
-.interactive-markdown-mindmap__toolbar {
+.baiwei-markdown-mindmap__toolbar {
   align-items: center;
-  background: var(--interactive-markdown-mindmap-panel);
-  border-bottom: 1px solid var(--interactive-markdown-mindmap-border);
+  background: var(--baiwei-markdown-mindmap-panel);
+  border-bottom: 1px solid var(--baiwei-markdown-mindmap-border);
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 10px;
 }
 
-.interactive-markdown-mindmap button,
-.interactive-markdown-mindmap__file {
+.baiwei-markdown-mindmap button,
+.baiwei-markdown-mindmap__file {
   align-items: center;
   background: #ffffff;
-  border: 1px solid var(--interactive-markdown-mindmap-border);
+  border: 1px solid var(--baiwei-markdown-mindmap-border);
   border-radius: 6px;
   color: #18202c;
   cursor: pointer;
@@ -41,26 +41,26 @@
   padding: 8px 12px;
 }
 
-.interactive-markdown-mindmap button:hover,
-.interactive-markdown-mindmap__file:hover {
-  border-color: var(--interactive-markdown-mindmap-accent);
+.baiwei-markdown-mindmap button:hover,
+.baiwei-markdown-mindmap__file:hover {
+  border-color: var(--baiwei-markdown-mindmap-accent);
 }
 
-.interactive-markdown-mindmap__mode.is-active {
-  background: var(--interactive-markdown-mindmap-accent);
-  border-color: var(--interactive-markdown-mindmap-accent);
+.baiwei-markdown-mindmap__mode.is-active {
+  background: var(--baiwei-markdown-mindmap-accent);
+  border-color: var(--baiwei-markdown-mindmap-accent);
   color: #ffffff;
 }
 
-.interactive-markdown-mindmap__planning.is-active,
-.interactive-markdown-mindmap__birdseye.is-active,
-.interactive-markdown-mindmap__layout.is-active,
-.interactive-markdown-mindmap__brick-style.is-active {
-  border-color: var(--interactive-markdown-mindmap-accent);
-  color: var(--interactive-markdown-mindmap-accent);
+.baiwei-markdown-mindmap__planning.is-active,
+.baiwei-markdown-mindmap__birdseye.is-active,
+.baiwei-markdown-mindmap__layout.is-active,
+.baiwei-markdown-mindmap__brick-style.is-active {
+  border-color: var(--baiwei-markdown-mindmap-accent);
+  color: var(--baiwei-markdown-mindmap-accent);
 }
 
-.interactive-markdown-mindmap__file input {
+.baiwei-markdown-mindmap__file input {
   height: 1px;
   opacity: 0;
   overflow: hidden;
@@ -68,16 +68,16 @@
   width: 1px;
 }
 
-.interactive-markdown-mindmap__editor {
-  border-bottom: 1px solid var(--interactive-markdown-mindmap-border);
+.baiwei-markdown-mindmap__editor {
+  border-bottom: 1px solid var(--baiwei-markdown-mindmap-border);
 }
 
-.interactive-markdown-mindmap[data-mode="sitemap"] .interactive-markdown-mindmap__editor,
-.interactive-markdown-mindmap[data-mode="sitemap"] .interactive-markdown-mindmap__file {
+.baiwei-markdown-mindmap[data-mode="sitemap"] .baiwei-markdown-mindmap__editor,
+.baiwei-markdown-mindmap[data-mode="sitemap"] .baiwei-markdown-mindmap__file {
   display: none;
 }
 
-.interactive-markdown-mindmap textarea {
+.baiwei-markdown-mindmap textarea {
   background: #fbfcfe;
   border: 0;
   box-sizing: border-box;
@@ -92,13 +92,13 @@
   width: 100%;
 }
 
-.interactive-markdown-mindmap textarea:focus {
-  outline: 2px solid color-mix(in srgb, var(--interactive-markdown-mindmap-accent) 70%, white);
+.baiwei-markdown-mindmap textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--baiwei-markdown-mindmap-accent) 70%, white);
   outline-offset: -2px;
 }
 
-.interactive-markdown-mindmap__status {
-  color: var(--interactive-markdown-mindmap-muted);
+.baiwei-markdown-mindmap__status {
+  color: var(--baiwei-markdown-mindmap-muted);
   font-size: 13px;
   min-height: 20px;
   opacity: 0;
@@ -107,38 +107,38 @@
   transition: opacity 200ms ease;
 }
 
-.interactive-markdown-mindmap__status.is-visible {
+.baiwei-markdown-mindmap__status.is-visible {
   opacity: 1;
 }
 
-.interactive-markdown-mindmap__status:empty {
+.baiwei-markdown-mindmap__status:empty {
   display: none;
 }
 
-.interactive-markdown-mindmap__status.is-error {
+.baiwei-markdown-mindmap__status.is-error {
   color: #a33030;
 }
 
-.interactive-markdown-mindmap__svg {
+.baiwei-markdown-mindmap__svg {
   display: block;
-  height: var(--interactive-markdown-mindmap-height);
+  height: var(--baiwei-markdown-mindmap-height);
   min-height: 320px;
   width: 100%;
 }
 
-.interactive-markdown-mindmap--view-only {
+.baiwei-markdown-mindmap--view-only {
   background: transparent;
   border: 0;
   border-radius: 0;
   overflow: visible;
 }
 
-.interactive-markdown-mindmap--view-only .interactive-markdown-mindmap__svg {
+.baiwei-markdown-mindmap--view-only .baiwei-markdown-mindmap__svg {
   background: transparent;
   min-height: 0;
 }
 
-.interactive-markdown-mindmap--view-only .interactive-markdown-mindmap__status {
+.baiwei-markdown-mindmap--view-only .baiwei-markdown-mindmap__status {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(163, 48, 48, 0.22);
   border-radius: 6px;
@@ -151,7 +151,7 @@
   z-index: 2;
 }
 
-.interactive-markdown-mindmap__canvas-controls {
+.baiwei-markdown-mindmap__canvas-controls {
   align-items: center;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(88, 101, 121, 0.16);
@@ -168,12 +168,12 @@
   z-index: 2;
 }
 
-.interactive-markdown-mindmap__canvas-controls:hover {
+.baiwei-markdown-mindmap__canvas-controls:hover {
   background: rgba(255, 255, 255, 0.94);
   border-color: rgba(88, 101, 121, 0.3);
 }
 
-.interactive-markdown-mindmap button.interactive-markdown-mindmap__icon-button {
+.baiwei-markdown-mindmap button.baiwei-markdown-mindmap__icon-button {
   background: transparent;
   border: 0;
   border-radius: 999px;
@@ -184,13 +184,13 @@
   width: 34px;
 }
 
-.interactive-markdown-mindmap button.interactive-markdown-mindmap__icon-button:hover,
-.interactive-markdown-mindmap button.interactive-markdown-mindmap__icon-button:focus-visible {
+.baiwei-markdown-mindmap button.baiwei-markdown-mindmap__icon-button:hover,
+.baiwei-markdown-mindmap button.baiwei-markdown-mindmap__icon-button:focus-visible {
   background: rgba(20, 108, 95, 0.1);
-  color: var(--interactive-markdown-mindmap-accent);
+  color: var(--baiwei-markdown-mindmap-accent);
 }
 
-.interactive-markdown-mindmap__icon-button svg {
+.baiwei-markdown-mindmap__icon-button svg {
   fill: none;
   height: 18px;
   stroke: currentColor;
@@ -200,30 +200,30 @@
   width: 18px;
 }
 
-.interactive-markdown-mindmap__badge,
-.interactive-markdown-mindmap__prompt {
+.baiwei-markdown-mindmap__badge,
+.baiwei-markdown-mindmap__prompt {
   dominant-baseline: middle;
-  fill: var(--interactive-markdown-mindmap-accent);
+  fill: var(--baiwei-markdown-mindmap-accent);
   font-size: 0.72em;
   font-weight: 700;
   margin-left: 0.55em;
 }
 
-.interactive-markdown-mindmap__prompt {
+.baiwei-markdown-mindmap__prompt {
   fill: #a15c12;
   color: #a15c12;
 }
 
-span.interactive-markdown-mindmap__badge {
+span.baiwei-markdown-mindmap__badge {
   background: rgba(20, 108, 95, 0.11);
   border-radius: 999px;
-  color: var(--interactive-markdown-mindmap-accent);
+  color: var(--baiwei-markdown-mindmap-accent);
   display: inline-block;
   padding: 0.05em 0.45em;
   vertical-align: middle;
 }
 
-.interactive-markdown-mindmap__mainpage-node circle {
+.baiwei-markdown-mindmap__mainpage-node circle {
   stroke: #a15c12;
   stroke-width: 2.4px;
 }
@@ -393,7 +393,7 @@ span.interactive-markdown-mindmap__badge {
   right: 6px;
 }
 
-.interactive-markdown-mindmap button.imm-wireframe-card__control,
+.baiwei-markdown-mindmap button.imm-wireframe-card__control,
 .imm-wireframe-card__control {
   align-items: center;
   background: rgba(255, 255, 255, 0.2);
@@ -412,31 +412,31 @@ span.interactive-markdown-mindmap__badge {
   width: 14px;
 }
 
-.interactive-markdown-mindmap button.imm-wireframe-card__control:hover,
+.baiwei-markdown-mindmap button.imm-wireframe-card__control:hover,
 .imm-wireframe-card__control:hover {
   background: rgba(255, 255, 255, 0.34);
   border-color: rgba(255, 255, 255, 0.72);
 }
 
-.interactive-markdown-mindmap--view-only:fullscreen {
+.baiwei-markdown-mindmap--view-only:fullscreen {
   background: #ffffff;
   display: grid;
   height: 100vh;
   width: 100vw;
 }
 
-.interactive-markdown-mindmap--view-only:fullscreen .interactive-markdown-mindmap__svg {
+.baiwei-markdown-mindmap--view-only:fullscreen .baiwei-markdown-mindmap__svg {
   height: 100vh;
   min-height: 100vh;
 }
 
 @media (max-width: 640px) {
-  .interactive-markdown-mindmap__toolbar {
+  .baiwei-markdown-mindmap__toolbar {
     align-items: stretch;
   }
 
-  .interactive-markdown-mindmap button,
-  .interactive-markdown-mindmap__file {
+  .baiwei-markdown-mindmap button,
+  .baiwei-markdown-mindmap__file {
     flex: 1 1 auto;
   }
 }
